@@ -1,0 +1,35 @@
+services:
+    nuxt:
+        image: node:21.7.3-alpine
+        user: ${DOCKER_USER}
+        ports:
+            - 3000:3000
+        volumes:
+            - .:/nuxt
+        working_dir: /nuxt
+        command: npm run dev --host=0.0.0.0
+        # command: npm run preview --host=0.0.0.0
+        # command: node .output/server/index.mjs
+
+        networks:
+            - soundhead
+
+    npm:
+        image: node:21.7.3-alpine
+        user: ${DOCKER_USER}
+        volumes:
+            - .:/nuxt
+        working_dir: /nuxt
+        entrypoint: ["npm"]
+
+    yarn:
+        image: node:21.7.3-alpine
+        user: ${DOCKER_USER}
+        volumes:
+            - .:/nuxt
+        working_dir: /nuxt
+        entrypoint: ["yarn"]
+
+networks:
+    soundhead:
+        external: true
