@@ -1,4 +1,4 @@
-<p align="center"><img src="https://rock-the-prototype.com/wp-content/uploads/2022/01/Nuxt_JavaScript_Framework.jpg" width="400" alt="NuxtJS Logo"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Rib0v/soundhead_front/6494fe30b917ffc0c583cd90d933e5951c012656/assets/nuxt-logo.svg" width="400" alt="NuxtJS Logo"></p>
 
 # О проекте
 
