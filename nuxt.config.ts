@@ -24,9 +24,9 @@ export default defineNuxtConfig({
 
     /**
      * В dev-режиме значения берутся из файла .env
+     * (если они там есть)
      */
     runtimeConfig: {
-        // Доступны на стороне клиента
         public: {
             apiBase: "http://localhost",
             apiBaseLocal: "http://localhost",
