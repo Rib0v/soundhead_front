@@ -22,6 +22,10 @@ export default defineNuxtConfig({
         // '/product/**': { swr : 60 * 60 * 4 },
     },
 
+    nitro: {
+        compressPublicAssets: { gzip: true, brotli: true },
+    },
+
     /**
      * В dev-режиме значения берутся из файла .env
      * (если они там есть)
