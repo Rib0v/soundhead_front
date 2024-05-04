@@ -15,18 +15,14 @@ const refQueryParams = ref<CommonObject>(query);
 const { pending, data: products } = useLazyFetch<ProductList>(addApiBase("products"), {
     query: refQueryParams,
 });
-const pagination = ref({
-    currentPage: products.value?.meta?.current_page || 1,
-    lastPage: products.value?.meta?.last_page || 1,
-    total: products.value?.meta?.total || 0,
-});
 
 parseUrlParams(query);
 
 function parseUrlParams(params: CommonObject) {
     if (params?.page > 1) paginationQuery.page = params.page;
     if (params?.perpage && params?.perpage != productsPerPage) paginationQuery.perpage = params.perpage;
-    firstRow.value = (pagination.value.currentPage - 1) * perpage.value;
+    const currentPage = Number(query.page) || 1;
+    firstRow.value = (currentPage - 1) * perpage.value;
 }
 
 const filterQueryParams = ref<CommonObject>({});
@@ -55,7 +51,6 @@ onMounted(() => {
 
 function resetPage() {
     delete paginationQuery.page;
-    pagination.value.currentPage = 1;
     firstRow.value = 0;
     scrollUp();
 }
@@ -77,6 +72,7 @@ function changePage(event: PageState) {
 }
 
 const scrollTarget = ref<HTMLInputElement | null>(null);
+
 function scrollUp() {
     setTimeout(() => {
         scrollTarget.value?.scrollIntoView({
