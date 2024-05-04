@@ -22,9 +22,11 @@ const [email, emailAttrs] = defineField("email");
 const [password, passwordAttrs] = defineField("password");
 
 const onSubmit = handleSubmit(async (values) => {
+    user.emailChanging = true;
     const isChanged = await user.changeUserInfo(values, "email");
     emailPopupVisible.value = !isChanged;
     password.value = "";
+    user.emailChanging = false;
 });
 
 const errorsFromBack = computed(() => {
@@ -36,7 +38,13 @@ const errorsFromBack = computed(() => {
 </script>
 
 <template>
-    <Button @click="emailPopupVisible = true" raised text class="edit-button">
+    <Button
+        v-if="user.emailChanging || !auth.loading"
+        @click="emailPopupVisible = true"
+        raised
+        text
+        class="edit-button"
+    >
         <template #icon>
             <i class="icon_edit edit-icon"></i>
         </template>
@@ -46,14 +54,14 @@ const errorsFromBack = computed(() => {
         <form @submit.prevent="onSubmit" class="wrapper">
             <div class="group">
                 <label for="username">Новый email</label>
-                <InputText
+                <input
                     type="email"
                     v-model="email"
                     v-bind="emailAttrs"
-                    :invalid="!!errors.email"
-                    id="username"
+                    :class="{ invalid: !!errors.email }"
                     placeholder="Введите email"
-                    class="text-input"
+                    id="email"
+                    class="textinput text-input"
                 />
                 <small v-if="errors.email || errorsFromBack.email" class="error">
                     {{ errors.email || errorsFromBack.email }}
@@ -61,14 +69,14 @@ const errorsFromBack = computed(() => {
             </div>
             <div class="group">
                 <label for="username">Пароль для подтверждения</label>
-                <InputText
+                <input
                     type="password"
                     v-model="password"
                     v-bind="passwordAttrs"
-                    :invalid="!!errors.password"
-                    id="username"
+                    :class="{ invalid: !!errors.password }"
+                    id="password"
                     placeholder="Введите пароль"
-                    class="text-input"
+                    class="textinput text-input"
                 />
                 <small v-if="errors.password || errorsFromBack.password" class="error">
                     {{ errors.password || errorsFromBack.password }}
@@ -83,7 +91,7 @@ const errorsFromBack = computed(() => {
                     raised
                     class="submit-button"
                 />
-                <Button type="submit" :loading="auth.loading" label="Сохранить" raised class="submit-button" />
+                <Button type="submit" label="Сохранить" raised class="submit-button" />
             </div>
         </form>
     </Dialog>
@@ -104,7 +112,7 @@ const errorsFromBack = computed(() => {
     row-gap: 0.5rem;
 }
 .text-input {
-    /* min-width: 20rem; */
+    min-width: 250px;
     width: 100%;
 }
 

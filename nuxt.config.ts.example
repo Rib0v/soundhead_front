@@ -6,6 +6,34 @@ export default defineNuxtConfig({
 
     primevue: {
         options: { ripple: true },
+
+        components: {
+            include: [
+                "Dropdown",
+                "IconField",
+                "InputGroup",
+                "InputGroupAddon",
+                "InputIcon",
+                "InputNumber",
+                "InputText",
+                "MultiSelect",
+                "Textarea",
+                "Button",
+                "Paginator",
+                "TabView",
+                "TabPanel",
+                "Dialog",
+                "Sidebar",
+                "Badge",
+            ],
+        },
+        directives: {
+            include: ["Ripple"],
+        },
+
+        composables: {
+            include: [],
+        },
     },
 
     app: {

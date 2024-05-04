@@ -1,5 +1,10 @@
 <script setup lang="ts">
+import Dropdown from "primevue/dropdown";
+import InputNumber from "primevue/inputnumber";
+import MultiSelect from "primevue/multiselect";
 const emit = defineEmits(["changeQueryParams"]);
+
+const pedning2 = true;
 
 const { query } = useRoute();
 const priceRange = ref([Number(query.minprice) || null, Number(query.maxprice) || null]);
@@ -64,7 +69,9 @@ watch(queryParams, (newVal, oldVal) => {
     emit("changeQueryParams", queryParams.value);
 });
 
-const { data: dataFilters }: { data: Ref<Filter[]> } = await useFetch(addApiBase("attributes"));
+const { pending, data: dataFilters }: { pending: Ref<boolean>; data: Ref<Filter[]> } = useLazyFetch(
+    addApiBase("attributes")
+);
 const brands = computed<Filter>(() => (dataFilters.value || [])[0] || {});
 const filters = computed<Filter[]>(() => (dataFilters.value || []).slice(1) || []);
 
@@ -104,9 +111,28 @@ function loadBrandStatesFromQuery(): void {
 
 <template>
     <aside>
-        <div class="filters">
-            <!-- <h2>Параметры</h2> -->
+        <div v-if="pending" class="filters">
+            <h4 class="first-subtitle skeleton loading loading__title"></h4>
+            <span class="skeleton loading loading__input"></span>
+            <h4 class="skeleton loading loading__title"></h4>
+            <span class="skeleton loading loading__input"></span>
+            <h4 class="skeleton loading loading__title"></h4>
+            <div class="pricegroup">
+                <span class="skeleton loading loading__input"></span>
+                <span class="skeleton loading loading__input"></span>
+            </div>
+            <h4 class="skeleton loading loading__title"></h4>
+            <div class="checkbox-wrapper">
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+            </div>
+        </div>
 
+        <div v-else class="filters">
             <h4 class="first-subtitle">Сортировка</h4>
             <Dropdown
                 v-model="sortBySelected"
@@ -199,5 +225,25 @@ h4 {
 .select {
     // max-width: 15rem;
     width: 100%;
+}
+
+.loading {
+    border-radius: 0.25rem;
+    display: inline-block;
+
+    &__title {
+        width: 60%;
+        height: 1.5rem;
+    }
+
+    &__input {
+        width: 100%;
+        height: 2rem;
+    }
+
+    &__option {
+        width: 100%;
+        height: 1.25rem;
+    }
 }
 </style>

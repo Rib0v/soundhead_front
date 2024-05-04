@@ -3,7 +3,7 @@ const auth = useAuthStore();
 </script>
 
 <template>
-    <NuxtLink v-if="$route.name === 'login'" to="/login" class="cart link">
+    <NuxtLink v-if="$route.name === 'login'" to="/login" class="cart link" no-prefetch>
         <span class="icon_login icon"></span>
     </NuxtLink>
     <a v-else href="/login" @click.prevent="auth.dialogOpen(0)" class="cart link">

@@ -1,5 +1,6 @@
 export const useUserStore = defineStore("user", () => {
     const auth = useAuthStore();
+    const emailChanging = ref(false);
 
     const name = ref("");
     const email = ref("");
@@ -75,6 +76,7 @@ export const useUserStore = defineStore("user", () => {
     }
 
     return {
+        emailChanging,
         name,
         email,
         address,

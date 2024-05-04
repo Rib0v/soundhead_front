@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Paginator from "primevue/paginator";
 import type { PageState } from "primevue/paginator";
 const filterbarVisible = ref(false);
 
@@ -11,7 +12,7 @@ const perpage = ref(Number(query.perpage) || Number(productsPerPage));
 
 const refQueryParams = ref<CommonObject>(query);
 
-const { data: products } = await useFetch<ProductList>(addApiBase("products"), {
+const { pending, data: products } = useLazyFetch<ProductList>(addApiBase("products"), {
     query: refQueryParams,
 });
 const pagination = ref({
@@ -109,7 +110,12 @@ function scrollUp() {
                 </div>
 
                 <div class="catalog__cards">
-                    <ProductCard v-for="item in products?.data || []" :item="item" :key="item.id" />
+                    <template v-if="pending">
+                        <ProductCard loading v-for="n in 12" />
+                    </template>
+                    <template v-else>
+                        <ProductCard v-for="item in products?.data || []" :item="item" :key="item.id" />
+                    </template>
                 </div>
 
                 <Paginator
@@ -185,18 +191,22 @@ function scrollUp() {
     &__cards {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 0.75rem;
+        gap: 0.5rem;
 
         @media (min-width: 375px) {
             grid-template-columns: repeat(2, 1fr);
         }
 
         @media (min-width: 450px) {
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         @media (min-width: 700px) {
             grid-template-columns: repeat(3, 1fr);
+
+            @media (min-width: 768px) {
+                gap: 1rem;
+            }
         }
 
         @media (min-width: 1350px) {

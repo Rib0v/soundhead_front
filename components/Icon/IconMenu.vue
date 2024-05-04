@@ -1,14 +1,8 @@
 <script setup lang="ts">
-const auth = useAuthStore();
 const visible = ref(false);
 
 function close() {
     visible.value = false;
-}
-
-function login() {
-    close();
-    auth.dialogOpen(0);
 }
 
 useRouter().beforeEach((to, from, next) => {
@@ -23,23 +17,7 @@ useRouter().beforeEach((to, from, next) => {
     </button>
 
     <Sidebar v-model:visible="visible" header="Меню">
-        <SearchBar />
-        <nav>
-            <ul class="navigation">
-                <li><NuxtLink to="/" @click="close">Главная</NuxtLink></li>
-                <!-- <li><NuxtLink to="/welcome" @click="close">Welcome</NuxtLink></li> -->
-                <li><NuxtLink to="/catalog" @click="close">Каталог</NuxtLink></li>
-
-                <li v-if="auth.logined"><NuxtLink to="/personal" @click="close">Профиль</NuxtLink></li>
-
-                <template v-else>
-                    <li v-if="$route.name === 'login'"><NuxtLink to="/login" @click="close">Вход</NuxtLink></li>
-                    <li v-else>
-                        <a href="/login" @click.prevent="login">Вход</a>
-                    </li>
-                </template>
-            </ul>
-        </nav>
+        <LazyMobileMenu v-if="visible" />
     </Sidebar>
 </template>
 
@@ -62,26 +40,5 @@ useRouter().beforeEach((to, from, next) => {
     user-select: none;
     line-height: 80%;
     color: black;
-}
-
-.navigation {
-    margin-top: 2rem;
-    list-style: none;
-    padding: 0;
-    font-size: 1.15rem;
-
-    li {
-        margin: 1rem 0;
-    }
-
-    a {
-        color: rgb(100, 100, 100);
-        text-decoration: none;
-        font-weight: bold;
-    }
-    .router-link-active,
-    .router-link-exact-active {
-        color: black;
-    }
 }
 </style>

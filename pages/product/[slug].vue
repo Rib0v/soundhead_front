@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
+
 const cartStore = useCartStore();
 const { cartList } = storeToRefs(cartStore);
 
@@ -27,7 +30,7 @@ const isAdded = computed(() => {
             <div class="product">
                 <div class="product__header">
                     <div class="product__gallery">
-                        <ProductGallery :name="product?.data?.name || ''" :photos="product?.data?.photos || []" />
+                        <LazyProductGallery :name="product?.data?.name || ''" :photos="product?.data?.photos || []" />
                     </div>
                     <div class="product__right-wrapper">
                         <h1>{{ product?.data?.name }}</h1>
@@ -68,7 +71,7 @@ const isAdded = computed(() => {
                                     <td class="attribute">
                                         <span>{{ item.attribute_name }}</span>
                                     </td>
-                                    <td>{{ item.value_name }}</td>
+                                    <td class="value">{{ item.value_name }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -108,17 +111,6 @@ h1 {
 
     @media (min-width: 940px) {
         font-size: 1.75rem;
-    }
-}
-
-th,
-td {
-    padding: 0.25rem 1.5rem;
-    text-align: left;
-
-    &:first-child {
-        padding-left: 0;
-        width: 100%;
     }
 }
 
@@ -223,21 +215,48 @@ td {
         max-width: 800px;
     }
 }
+
+th,
+td {
+    // padding: 0.25rem 1.5rem;
+    text-align: left;
+
+    &:first-child {
+        padding-left: 0;
+        padding-right: 0.5rem;
+        width: 100%;
+    }
+}
+
 .attribute {
     position: relative;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        border-bottom: 2px dotted black;
+    }
+
+    span {
+        position: relative;
+        background: white;
+        padding-right: 0.5rem;
+        z-index: 2;
+    }
 }
-.attribute span {
-    position: relative;
-    background: white;
-    padding-right: 0.5rem;
-    z-index: 2;
-}
-.attribute::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 2rem;
-    right: -1rem;
-    border-bottom: 2px dotted black;
+
+.value {
+    word-break: break-all;
+
+    @media (min-width: 340px) {
+        word-break: normal;
+    }
+
+    @media (min-width: 500px) {
+        padding-left: 0.5rem;
+    }
 }
 </style>

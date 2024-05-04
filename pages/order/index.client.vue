@@ -112,14 +112,15 @@ const errorsFromBack = computed(() => {
                         <div class="inputs">
                             <div class="group">
                                 <label for="name">Имя:</label>
-                                <InputText
+                                <input
+                                    type="text"
                                     v-model="name"
                                     v-bind="nameAttrs"
-                                    :invalid="!!errors.name"
+                                    :class="{ invalid: !!errors.name }"
                                     placeholder="Введите имя"
                                     id="name"
                                     name="name"
-                                    class="text-input"
+                                    class="textinput input"
                                 />
                                 <small v-if="errors.name || errorsFromBack.name" class="error">
                                     {{ errors.name || errorsFromBack.name }}
@@ -128,14 +129,15 @@ const errorsFromBack = computed(() => {
 
                             <div class="group">
                                 <label for="phone">Телефон:</label>
-                                <InputText
+                                <input
+                                    type="text"
                                     v-model="phone"
                                     v-bind="phoneAttrs"
-                                    :invalid="!!errors.phone"
+                                    :class="{ invalid: !!errors.phone }"
                                     placeholder="Введите телефон"
                                     id="phone"
                                     name="phone"
-                                    class="text-input"
+                                    class="textinput input"
                                 />
                                 <small v-if="errors.phone || errorsFromBack.phone" class="error">
                                     {{ errors.phone || errorsFromBack.phone }}
@@ -144,14 +146,15 @@ const errorsFromBack = computed(() => {
 
                             <div class="group">
                                 <label for="email">Электронная почта:</label>
-                                <InputText
+                                <input
+                                    type="email"
                                     v-model="email"
                                     v-bind="emailAttrs"
-                                    :invalid="!!errors.email"
+                                    :class="{ invalid: !!errors.email }"
                                     placeholder="Введите email"
                                     id="email"
                                     name="email"
-                                    class="text-input"
+                                    class="textinput input"
                                 />
                                 <small v-if="errors.email || errorsFromBack.email" class="error">
                                     {{ errors.email || errorsFromBack.email }}
@@ -160,17 +163,16 @@ const errorsFromBack = computed(() => {
 
                             <div v-show="deliveryTipe !== 'self'" class="group">
                                 <label for="address">Адрес:</label>
-                                <Textarea
+                                <textarea
                                     id="address"
                                     name="address"
                                     v-model="address"
                                     v-bind="addressAttrs"
-                                    :invalid="!!errors.address"
+                                    :class="{ invalid: !!errors.address }"
                                     rows="4"
-                                    autoResize
                                     placeholder="Введите адрес"
-                                    class="textarea"
-                                />
+                                    class="textinput textarea"
+                                ></textarea>
                                 <small v-if="errors.address || errorsFromBack.address" class="error">
                                     {{ errors.address || errorsFromBack.address }}
                                 </small>
@@ -178,17 +180,16 @@ const errorsFromBack = computed(() => {
 
                             <div class="group">
                                 <label for="comment">Комментарий к заказу:</label>
-                                <Textarea
+                                <textarea
                                     id="comment"
                                     name="comment"
                                     v-model="comment"
                                     v-bind="commentAttrs"
-                                    :invalid="!!errors.comment"
+                                    :class="{ invalid: !!errors.comment }"
                                     rows="4"
-                                    autoResize
                                     placeholder="Есть ли у вас пожелания? :)"
-                                    class="textarea"
-                                />
+                                    class="textinput textarea"
+                                ></textarea>
                                 <small v-if="errors.comment || errorsFromBack.comment" class="error">
                                     {{ errors.comment || errorsFromBack.comment }}
                                 </small>
@@ -271,8 +272,14 @@ hr {
     row-gap: 0.75rem;
 }
 
-.text-input {
+.input {
     height: 2.75rem;
+    width: 100%;
+}
+
+.textarea {
+    width: 100%;
+    resize: none;
 }
 
 .submit-button {

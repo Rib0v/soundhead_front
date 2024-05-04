@@ -35,6 +35,7 @@ function remove(id: number) {
 }
 
 async function getProductsInfo() {
+    product.loading = true;
     try {
         const resp = await $fetch<ProductCompare>(addApiBase("products/compare"), {
             query: {
@@ -44,70 +45,75 @@ async function getProductsInfo() {
         preparedProducts.value = resp.data || [];
         allAttributes.value = resp.attributes || [];
     } catch (error) {}
+    product.loading = false;
 }
 </script>
 
 <template>
     <div>
         <Title>Сравнение товаров</Title>
-        <h1>Сравнение товаров</h1>
+        <template v-if="!product.loading">
+            <h1>Сравнение товаров</h1>
 
-        <template v-if="!preparedProducts.length">
-            <p>Товаров пока нет в списке сравнения. Добавьте что-нибудь! :)</p>
-            <NuxtLink to="/catalog" class="p-button link">Каталог</NuxtLink>
-        </template>
-        <template v-else>
-            <div class="button-wrapper">
-                <Button @click="filtered = false" raised :class="{ 'checked-button': !filtered }" label="Все" />
-                <Button
-                    @click="filtered = true"
-                    raised
-                    :class="{ 'checked-button': filtered }"
-                    label="Только отличающиеся"
-                />
-            </div>
+            <template v-if="!preparedProducts.length">
+                <p>Товаров пока нет в списке сравнения. Добавьте что-нибудь! :)</p>
+                <NuxtLink to="/catalog" class="p-button link">Каталог</NuxtLink>
+            </template>
+            <template v-else>
+                <div class="button-wrapper">
+                    <Button @click="filtered = false" raised :class="{ 'checked-button': !filtered }" label="Все" />
+                    <Button
+                        @click="filtered = true"
+                        raised
+                        :class="{ 'checked-button': filtered }"
+                        label="Только отличающиеся"
+                    />
+                </div>
 
-            <div class="wrapper">
-                <table v-show="product.compared.length">
-                    <thead>
-                        <tr>
-                            <th class="first-th"></th>
-                            <td v-for="product in preparedProducts" class="first-row">
-                                <Button @click="remove(product.id)" severity="secondary" class="remove-button">
-                                    <i class="icon_close remove-icon"></i>
-                                </Button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <td v-for="product in preparedProducts" class="titlerow">
-                                <p class="title">
-                                    <NuxtLink :to="`/product/${product.slug}`">{{ product.name }}</NuxtLink>
-                                </p>
-                                <NuxtLink :to="`/product/${product.slug}`">
-                                    <img :src="product.image" :alt="product.name" class="image" />
-                                </NuxtLink>
-                            </td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>Цена</th>
-                            <td v-for="product in preparedProducts">{{ product.price.toLocaleString("ru-RU") }} р.</td>
-                        </tr>
-                        <tr v-for="(value, key) in attributes">
-                            <th>{{ value }}</th>
-                            <td v-for="product in preparedProducts">{{ product.attributes[key] ?? "—" }}</td>
-                        </tr>
-                        <tr>
-                            <th>Описание</th>
-                            <td v-for="product in preparedProducts">
-                                <span class="description">{{ product.description }}</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <div class="wrapper">
+                    <table v-show="product.compared.length">
+                        <thead>
+                            <tr class="first-row">
+                                <th class="first-th"></th>
+                                <td v-for="product in preparedProducts" class="button-td">
+                                    <Button @click="remove(product.id)" severity="secondary" class="remove-button">
+                                        <i class="icon_close remove-icon"></i>
+                                    </Button>
+                                </td>
+                            </tr>
+                            <tr class="second-row">
+                                <th></th>
+                                <td v-for="product in preparedProducts" class="titlerow">
+                                    <p class="title">
+                                        <NuxtLink :to="`/product/${product.slug}`">{{ product.name }}</NuxtLink>
+                                    </p>
+                                    <NuxtLink :to="`/product/${product.slug}`">
+                                        <img :src="product.image" :alt="product.name" class="image" />
+                                    </NuxtLink>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Цена</th>
+                                <td v-for="product in preparedProducts">
+                                    {{ product.price.toLocaleString("ru-RU") }} р.
+                                </td>
+                            </tr>
+                            <tr v-for="(value, key) in attributes">
+                                <th>{{ value }}</th>
+                                <td v-for="product in preparedProducts">{{ product.attributes[key] ?? "—" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Описание</th>
+                                <td v-for="product in preparedProducts">
+                                    <span class="description">{{ product.description }}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
         </template>
     </div>
 </template>
@@ -129,23 +135,35 @@ th,
 td {
     border: 1px solid #97c0c2;
     padding: 0.25rem 1rem;
-    /* width: 20rem; */
     text-align: left;
     vertical-align: top;
+}
+th {
+    text-align: right;
 }
 td {
     max-width: 10rem;
 }
 .first-row {
+    border-top: none;
+}
+.first-row {
     text-align: center;
-    /* border: none; */
 }
 .first-th {
     width: 12rem;
+    border-top: none;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
 }
 .titlerow {
     padding: 0;
     overflow: hidden;
+}
+.button-td {
+    border-top: none;
+    text-align: center;
+    border: none;
 }
 .image {
     width: 10rem;
@@ -183,12 +201,13 @@ td {
     text-decoration: none;
 }
 .remove-button {
-    border-radius: 50%;
-    width: 2rem;
-    height: 2rem;
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 0.25rem;
 }
 .remove-icon {
     margin: 0;

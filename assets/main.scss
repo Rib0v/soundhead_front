@@ -1,0 +1,82 @@
+.textinput {
+    font-size: 1rem;
+    color: #334155;
+    background: #ffffff;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #cbd5e1;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, outline-color 0.2s;
+    appearance: none;
+    border-radius: 0.25rem;
+    outline-color: transparent;
+    outline: none;
+    box-shadow: 0 0 rgba(0, 0, 0, 0), 0 0 rgba(0, 0, 0, 0), 0 1px 2px 0 rgba(18, 18, 23, 0.05);
+
+    &:enabled:hover {
+        border-color: #94a3b8;
+    }
+
+    &:enabled:focus {
+        border-color: #10b981;
+    }
+}
+
+.invalid {
+    border-color: #f87171;
+}
+
+.skeleton {
+    overflow: hidden;
+    background: #e2e8f0;
+    position: relative;
+}
+
+.skeleton::after {
+    content: "";
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+    animation: skeleton-animation 1.2s infinite;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateX(-100%);
+    z-index: 1;
+}
+
+@keyframes skeleton-animation {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(100%);
+    }
+}
+
+.nodisplay {
+    display: none !important;
+}
+
+.hidden {
+    visibility: hidden !important;
+}
+
+.loader {
+    position: fixed;
+    z-index: 10000;
+    left: calc(50% - 5rem);
+    top: calc(50vh - 5rem);
+    width: 10rem;
+    height: 10rem;
+    opacity: 0.5;
+    pointer-events: none;
+    animation: loader 1s linear infinite;
+}
+
+@keyframes loader {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

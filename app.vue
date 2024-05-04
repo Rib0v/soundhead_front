@@ -1,15 +1,20 @@
 <script setup>
-import "primevue/resources/themes/aura-light-green/theme.css";
+// import "primevue/resources/themes/aura-light-green/theme.css";
+import "~/assets/primevue/themes/aura/aura-light/green/theme.scss";
 import "~/assets/icons.css";
+import "~/assets/main.scss";
 
 const auth = useAuthStore();
+const product = useProductStore();
+
+const loading = computed(() => product.loading || auth.loading);
 
 useHead({
     titleTemplate: "%s / SOUNDHEAD",
 });
 
 onMounted(() => {
-    useProductStore().init();
+    product.init();
     auth.init();
 });
 </script>
@@ -17,17 +22,18 @@ onMounted(() => {
 <template>
     <div>
         <NuxtLoadingIndicator />
+        <img v-show="loading" src="~/public/loading.svg" class="loader" />
         <div class="container">
             <header>
                 <nav class="menu">
                     <div class="menu__links">
-                        <NuxtLink to="/">Главная</NuxtLink>
-                        <NuxtLink to="/catalog">Каталог</NuxtLink>
+                        <NuxtLink to="/" no-prefetch>Главная</NuxtLink>
+                        <NuxtLink to="/catalog" no-prefetch>Каталог</NuxtLink>
 
-                        <NuxtLink v-if="auth.logined" to="/personal">Профиль</NuxtLink>
+                        <NuxtLink v-if="auth.logined" to="/personal" no-prefetch>Профиль</NuxtLink>
 
                         <template v-else>
-                            <NuxtLink v-if="$route.name === 'login'" to="/login">Вход</NuxtLink>
+                            <NuxtLink v-if="$route.name === 'login'" to="/login" no-prefetch>Вход</NuxtLink>
                             <a v-else href="/login" @click.prevent="auth.dialogOpen(0)">Вход</a>
                         </template>
                     </div>
@@ -82,7 +88,11 @@ body {
 .container {
     max-width: 1600px;
     margin: 0 auto 6rem;
-    padding: 0 0.5rem;
+    padding: 0;
+
+    @media (min-width: 450px) {
+        padding: 0 0.5rem;
+    }
 
     @media (min-width: 768px) {
         padding: 0 1rem;

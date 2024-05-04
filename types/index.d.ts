@@ -20,10 +20,15 @@ type Product = {
     [key: string]: any;
 };
 
+type Meta = {
+    current_page: number;
+    last_page: number;
+    total: number;
+};
+
 type ProductList = {
     data: Product[];
-    links: CommonObject;
-    meta: CommonObject;
+    meta: Meta;
 };
 
 type ProductDetail = {
