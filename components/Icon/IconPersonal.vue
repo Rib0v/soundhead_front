@@ -3,7 +3,7 @@ const auth = useAuthStore();
 </script>
 
 <template>
-    <NuxtLink to="/personal" class="cart link" no-prefetch>
+    <NuxtLink to="/personal" aria-label="Личный кабинет" class="cart link" no-prefetch>
         <span class="icon_person_outline icon"></span>
     </NuxtLink>
 </template>

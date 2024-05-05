@@ -41,6 +41,7 @@ export default defineNuxtConfig({
 
         head: {
             link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+            htmlAttrs: { lang: "ru" },
         },
     },
 
@@ -63,7 +64,7 @@ export default defineNuxtConfig({
             apiBase: "http://localhost",
             apiBaseLocal: "http://localhost",
             apiPort: "80",
-            productsPerPage: 24,
+            productsPerPage: 12,
             searchThrottleInterval: 500,
         },
     },

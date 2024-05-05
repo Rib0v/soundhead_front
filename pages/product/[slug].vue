@@ -53,12 +53,10 @@ const isAdded = computed(() => {
                     </div>
                 </div>
                 <TabView id="product-description-tabview">
-                    <TabPanel>
-                        <template #header> <div class="tab">Описание</div> </template>
+                    <TabPanel header="Описание">
                         <p class="product__description">{{ product?.data.description }}</p>
                     </TabPanel>
-                    <TabPanel>
-                        <template #header> <div class="tab">Характеристики</div> </template>
+                    <TabPanel header="Характеристики">
                         <table class="product__attributes">
                             <thead>
                                 <tr>
