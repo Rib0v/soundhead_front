@@ -112,7 +112,7 @@ hr {
     &__image {
         width: 5rem;
         height: 5rem;
-        object-fit: cover;
+        object-fit: contain;
         border-radius: 0.5rem;
 
         @media (min-width: 440px) {

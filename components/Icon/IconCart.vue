@@ -6,7 +6,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <button @click="cart.opened = true" class="cart">
+    <button @click="cart.opened = true" aria-label="Корзина" class="cart">
         <span class="icon_shopping_cart_outline icon"></span>
         <BadgeCounter :count="cart.totalCount" />
     </button>

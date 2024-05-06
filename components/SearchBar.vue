@@ -84,10 +84,11 @@ function createThrottle(interval: number) {
                     v-model="query"
                     type="text"
                     name="search"
+                    aria-label="Поиск"
                     placeholder="Найти товар"
                     class="textinput search2__input"
                 />
-                <button class="icon_search"></button>
+                <button class="icon_search" aria-label="Поиск"></button>
             </div>
         </form>
         <div v-show="visible && query.length && result.length" class="results" :class="{ show: !transparent }">

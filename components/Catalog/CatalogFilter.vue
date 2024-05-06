@@ -4,8 +4,6 @@ import InputNumber from "primevue/inputnumber";
 import MultiSelect from "primevue/multiselect";
 const emit = defineEmits(["changeQueryParams"]);
 
-const pedning2 = true;
-
 const { query } = useRoute();
 const priceRange = ref([Number(query.minprice) || null, Number(query.maxprice) || null]);
 
@@ -56,7 +54,6 @@ const queryParams = computed<QueryParams>(() => {
 
     params = {
         ...params,
-        // ...paginationQuery,
         ...selectedCheckBoxesStringified.value,
         ...selectedBrandsStringified.value,
     };
@@ -79,9 +76,10 @@ loadCheckBoxStatesFromQuery();
 loadBrandStatesFromQuery();
 
 watch(dataFilters, (newVal, oldVal) => {
-    console.log("LOADED");
-    loadCheckBoxStatesFromQuery();
-    loadBrandStatesFromQuery();
+    if (!pending) {
+        loadCheckBoxStatesFromQuery();
+        loadBrandStatesFromQuery();
+    }
 });
 
 function strParamsToArr(value: string): number[] {
@@ -150,6 +148,7 @@ function loadBrandStatesFromQuery(): void {
                 filter
                 optionLabel="name"
                 placeholder="Выберите бренд"
+                id="brand"
                 class="select"
             />
 
@@ -173,11 +172,14 @@ function loadBrandStatesFromQuery(): void {
                 <h4>{{ filter.name }}</h4>
                 <div class="checkbox-wrapper">
                     <label v-for="val in filter.vals" :key="val.id">
-                        <input type="checkbox" v-model="checkBoxStates[filter.slug]" :value="val.id" />
+                        <input
+                            type="checkbox"
+                            v-model="checkBoxStates[filter.slug]"
+                            :id="'box' + val.id"
+                            :value="val.id"
+                        />
                         {{ val.name }}
                     </label>
-                    <!-- <input type="checkbox" v-model="checkBoxes[filter.slug]" :value="val.id" :id="'val' + val.id" />
-                    <label :for="'val' + val.id">{{ val.name }}</label> -->
                 </div>
             </div>
         </div>
@@ -209,12 +211,9 @@ h4 {
 }
 .checkbox-wrapper {
     display: flex;
-    /* align-items: center; */
     gap: 1rem;
     flex-wrap: wrap;
     max-width: 15rem;
-    /* max-width: 14rem; */
-    /* white-space: nowrap; */
 }
 
 .pricegroup {
@@ -223,7 +222,6 @@ h4 {
 }
 
 .select {
-    // max-width: 15rem;
     width: 100%;
 }
 

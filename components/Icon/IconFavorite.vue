@@ -3,7 +3,7 @@ const product = useProductStore();
 </script>
 
 <template>
-    <button @click="product.favoritesOpened = true" class="cart">
+    <button @click="product.favoritesOpened = true" aria-label="Избранное" class="cart">
         <i class="icon_favorite_border icon"></i>
         <BadgeCounter :count="product.favorites.length" />
     </button>

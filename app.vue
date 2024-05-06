@@ -6,6 +6,7 @@ import "~/assets/main.scss";
 
 const auth = useAuthStore();
 const product = useProductStore();
+const scrollButtonVisible = ref(false);
 
 const loading = computed(() => product.loading || auth.loading);
 
@@ -13,9 +14,22 @@ useHead({
     titleTemplate: "%s / SOUNDHEAD",
 });
 
+function scrolltop() {
+    if (window) {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }
+}
+
 onMounted(() => {
     product.init();
     auth.init();
+
+    setInterval(() => {
+        scrollButtonVisible.value = window.scrollY > 120;
+    }, 500);
 });
 </script>
 
@@ -60,10 +74,11 @@ onMounted(() => {
             </header>
             <NuxtPage />
         </div>
+        <button class="scrolltop" @click="scrolltop" :class="{ scrolltop__visible: scrollButtonVisible }"></button>
     </div>
 </template>
 
-<style>
+<style lang="scss">
 :root {
     font-family: sans-serif;
     font-feature-settings: normal;
@@ -96,6 +111,51 @@ body {
 
     @media (min-width: 768px) {
         padding: 0 1rem;
+    }
+}
+
+.scrolltop {
+    position: fixed;
+    right: 0.25rem;
+    bottom: 4.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5) url("~/public/scrolltop.png") center no-repeat;
+    transition: 400ms;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(4rem);
+
+    @media (min-width: 500px) {
+        right: 0.5rem;
+        bottom: 4.5rem;
+    }
+
+    @media (min-width: 768px) {
+        right: 0.75rem;
+        bottom: 0.75rem;
+    }
+    @media (min-width: 1000px) {
+        right: 1rem;
+        bottom: 1rem;
+    }
+    @media (min-width: 1200px) {
+        right: 1.5rem;
+        bottom: 1.5rem;
+    }
+    @media (min-width: 1800px) {
+        right: 2.5rem;
+        bottom: 2.5rem;
+    }
+
+    &__visible {
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(0);
     }
 }
 </style>

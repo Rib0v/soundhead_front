@@ -12,7 +12,7 @@ useRouter().beforeEach((to, from, next) => {
 </script>
 
 <template>
-    <button @click="visible = true" class="cart p-overlay-badge">
+    <button @click="visible = true" aria-label="Меню" class="cart p-overlay-badge">
         <span class="icon_menu icon"></span>
     </button>
 

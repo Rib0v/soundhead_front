@@ -8,8 +8,8 @@ const props = defineProps<{
     loading?: boolean;
 }>();
 
-// TODO если будет подгрузка при скролле и много товаров на странице,
-// то вероятно нужно будет сделать подсчет порциями, только для загружаемых
+// TODO если будет много товаров на странице, то вероятно нужно
+// будет сделать подсчет порциями, только для загружаемых
 // и добавлять true вручную, при добавлении товара в корзину
 const isAdded = computed(() => {
     return cart.cartList.some((item) => item.id === props.item?.id);
@@ -25,7 +25,7 @@ const isAddedToFavorites = computed(() => {
 
 <template>
     <div class="card">
-        <template v-if="loading">
+        <template v-if="loading || !item || !item.id">
             <span class="card__image-wrapper skeleton">
                 <img alt="Loading..." class="card__image hidden" />
             </span>
@@ -39,64 +39,69 @@ const isAddedToFavorites = computed(() => {
             <p class="card__status skeleton loading loading__status">
                 <span class="card__link"></span>
             </p>
-            <Button class="card__add-button card__add-button_loading skeleton">
+            <Button disabled aria-label="Добавить в корзину" class="card__add-button card__add-button_loading skeleton">
                 <i class="card__add-button-icon icon_shopping_cart_filled"></i>
             </Button>
-            <button class="card__favorites-button nodisplay">
+            <button disabled aria-label="Добавить в избранное" class="card__favorites-button nodisplay">
                 <i class="card__favorites-button-icon icon_favorite_border"></i>
             </button>
-            <button class="card__favorites-button card__compare-button nodisplay">
+            <button
+                disabled
+                aria-label="Добавить к сравнению"
+                class="card__favorites-button card__compare-button nodisplay"
+            >
                 <i class="card__favorites-button-icon icon_leaderboard"></i>
             </button>
         </template>
 
         <template v-else>
-            <template v-if="item">
-                <NuxtLink :to="`/product/${item.slug}`" class="card__image-wrapper" no-prefetch>
-                    <img :src="item.image" :alt="item.name" loading="lazy" class="card__image" />
-                </NuxtLink>
+            <NuxtLink :to="`/product/${item.slug}`" class="card__image-wrapper" no-prefetch>
+                <img :src="item.image" :alt="item.name" loading="lazy" class="card__image" />
+            </NuxtLink>
 
-                <h4 class="card__title">
-                    <NuxtLink :to="`/product/${item.slug}`" class="card__link" no-prefetch>
-                        {{ item.name }}
-                    </NuxtLink>
-                </h4>
-                <p class="card__price">
-                    <NuxtLink :to="`/product/${item.slug}`" class="card__link" no-prefetch>
-                        {{ item.price.toLocaleString("ru-RU") }} ₽
-                    </NuxtLink>
-                </p>
-                <p class="card__status">
-                    <NuxtLink :to="`/product/${item.slug}`" class="card__link" no-prefetch> В наличии </NuxtLink>
-                </p>
-                <Button
-                    @click="cart.addProduct(item)"
-                    :raised="!isAdded"
-                    class="card__add-button"
-                    :class="{ 'card__add-button_added': isAdded }"
-                >
-                    <i v-if="!isAdded" class="card__add-button-icon icon_shopping_cart_filled"></i>
-                    <i v-else class="card__add-button-icon icon_add_shopping_cart"></i>
-                </Button>
-                <button
-                    v-if="!favoritesMode"
-                    @click="product.addToFavorites(item)"
-                    class="card__favorites-button"
-                    :class="{ 'card__favorites-button_added': isAddedToFavorites }"
-                >
-                    <i class="card__favorites-button-icon icon_favorite_border"></i>
-                </button>
-                <button @click="product.removeFromFavorites(item.id)" v-else class="card__favorites-button">
-                    <i class="card__favorites-button-icon icon_close"></i>
-                </button>
-                <button
-                    @click="product.addToCompared(item.id)"
-                    class="card__favorites-button card__compare-button"
-                    :class="{ 'card__favorites-button_added': isAddedToCompared }"
-                >
-                    <i class="card__favorites-button-icon icon_leaderboard"></i>
-                </button>
-            </template>
+            <h4 class="card__title">
+                <NuxtLink :to="`/product/${item.slug}`" class="card__link" no-prefetch>
+                    {{ item.name }}
+                </NuxtLink>
+            </h4>
+            <p class="card__price">
+                <NuxtLink :to="`/product/${item.slug}`" class="card__link" no-prefetch>
+                    {{ item.price.toLocaleString("ru-RU") }} ₽
+                </NuxtLink>
+            </p>
+            <p class="card__status">
+                <NuxtLink :to="`/product/${item.slug}`" class="card__link" no-prefetch> В наличии </NuxtLink>
+            </p>
+            <Button
+                @click="cart.addProduct(item)"
+                aria-label="Добавить в корзину"
+                :raised="!isAdded"
+                class="card__add-button"
+                :class="{ 'card__add-button_added': isAdded }"
+            >
+                <i v-if="!isAdded" class="card__add-button-icon icon_shopping_cart_filled"></i>
+                <i v-else class="card__add-button-icon icon_add_shopping_cart"></i>
+            </Button>
+            <button
+                v-if="!favoritesMode"
+                @click="product.addToFavorites(item)"
+                aria-label="Добавить в избранное"
+                class="card__favorites-button"
+                :class="{ 'card__favorites-button_added': isAddedToFavorites }"
+            >
+                <i class="card__favorites-button-icon icon_favorite_border"></i>
+            </button>
+            <button @click="product.removeFromFavorites(item.id)" v-else class="card__favorites-button">
+                <i class="card__favorites-button-icon icon_close"></i>
+            </button>
+            <button
+                @click="product.addToCompared(item.id)"
+                aria-label="Добавить к сравнению"
+                class="card__favorites-button card__compare-button"
+                :class="{ 'card__favorites-button_added': isAddedToCompared }"
+            >
+                <i class="card__favorites-button-icon icon_leaderboard"></i>
+            </button>
         </template>
     </div>
 </template>

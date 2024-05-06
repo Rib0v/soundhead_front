@@ -3,7 +3,7 @@ const product = useProductStore();
 </script>
 
 <template>
-    <NuxtLink to="/product/compare" class="link" no-prefetch>
+    <NuxtLink to="/product/compare" aria-label="Сравнение товаров" class="link" no-prefetch>
         <span class="cart">
             <span class="icon_leaderboard icon"></span>
             <BadgeCounter :count="product.compared.length" />
