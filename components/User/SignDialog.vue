@@ -15,7 +15,7 @@ const auth = useAuthStore();
         }"
     >
         <template #container>
-            <LazyUserSignAll v-if="auth.dialogVisible" />
+            <UserSignAll v-if="auth.dialogVisible" />
         </template>
     </Dialog>
 </template>

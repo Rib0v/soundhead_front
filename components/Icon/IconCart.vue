@@ -11,7 +11,7 @@ onMounted(() => {
         <BadgeCounter :count="cart.totalCount" />
     </button>
     <Dialog v-model:visible="cart.opened" modal dismissableMask header="Корзиночка" :style="{ width: '30rem' }">
-        <LazyProductCart v-if="cart.opened" />
+        <ProductCart v-if="cart.opened" />
     </Dialog>
 </template>
 

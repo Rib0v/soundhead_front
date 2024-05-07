@@ -8,7 +8,7 @@ const product = useProductStore();
         <BadgeCounter :count="product.favorites.length" />
     </button>
     <Dialog v-model:visible="product.favoritesOpened" modal dismissableMask header="Избранное">
-        <LazyProductFavorite v-if="product.favoritesOpened" />
+        <ProductFavorite v-if="product.favoritesOpened" />
     </Dialog>
 </template>
 

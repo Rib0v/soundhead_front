@@ -161,6 +161,7 @@ const isAddedToFavorites = computed(() => {
         width: 100%;
         height: 100%;
         object-fit: contain;
+        color: white;
         // filter: brightness(0.7) contrast(1.03);
         //filter: contrast(1.2);
         //opacity: 0.5;

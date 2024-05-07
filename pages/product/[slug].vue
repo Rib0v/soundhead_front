@@ -4,10 +4,13 @@ import TabPanel from "primevue/tabpanel";
 
 const cartStore = useCartStore();
 const { cartList } = storeToRefs(cartStore);
+const productStore = useProductStore();
 
-const { data: product, error } = await useFetch<{ data: ProductDetail }>(
-    addApiBase(`products/${useRoute().params.slug}`)
-);
+const {
+    data: product,
+    pending,
+    error,
+} = useLazyFetch<{ data: ProductDetail }>(addApiBase(`products/${useRoute().params.slug}`));
 
 if (error?.value?.statusCode === 404) {
     navigateTo("/404");
@@ -15,6 +18,14 @@ if (error?.value?.statusCode === 404) {
 
 const isAdded = computed(() => {
     return cartList.value.find((item) => item.id == product?.value?.data?.id);
+});
+
+watch(pending, () => {
+    if (pending.value) {
+        productStore.loading = true;
+    } else {
+        productStore.loading = false;
+    }
 });
 </script>
 
