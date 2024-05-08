@@ -6,6 +6,17 @@ export default defineNuxtConfig({
 
     primevue: {
         options: { ripple: true },
+
+        components: {
+            include: ["Button", "Dialog", "Sidebar"],
+        },
+        directives: {
+            include: ["Ripple"],
+        },
+
+        composables: {
+            include: [],
+        },
     },
 
     app: {
@@ -13,13 +24,14 @@ export default defineNuxtConfig({
 
         head: {
             link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+            htmlAttrs: { lang: "ru" },
         },
     },
 
     routeRules: {
         "/": { prerender: true },
         "/catalog": { swr: true },
-        // '/product/**': { swr : 60 * 60 * 4 },
+        "/product/**": { swr: true },
     },
 
     nitro: {
@@ -34,8 +46,8 @@ export default defineNuxtConfig({
         public: {
             apiBase: "http://localhost",
             apiBaseLocal: "http://localhost",
-            apiPort: "80",
-            productsPerPage: 24,
+            apiPort: "8000",
+            productsPerPage: 12,
             searchThrottleInterval: 500,
         },
     },

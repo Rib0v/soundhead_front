@@ -28,39 +28,43 @@ useRouter().beforeEach((to, from, next) => {
 });
 </script>
 <template>
-    <div class="personal">
-        <aside>
-            <nav class="navbar">
-                <ul class="navbar__list">
-                    <li><NuxtLink to="/personal" class="navbar__link">Профиль</NuxtLink></li>
-                    <li><NuxtLink to="/personal/orders" class="navbar__link navbar__link_order">Заказы</NuxtLink></li>
-                    <li><NuxtLink to="/personal/address" class="navbar__link">Адрес</NuxtLink></li>
-                    <li><span @click="cart.opened = true" class="navbar__link">Корзина</span></li>
-                    <li><NuxtLink to="/personal/password" class="navbar__link">Сменить пароль</NuxtLink></li>
-                    <!-- <li><NuxtLink to="/personal/devtools" class="navbar__link">DevTools</NuxtLink></li> -->
-                    <li><span @click="logout" class="navbar__link">Выйти</span></li>
-                </ul>
-            </nav>
-        </aside>
+    <div>
+        <div class="personal">
+            <aside>
+                <nav class="navbar">
+                    <ul class="navbar__list">
+                        <li><NuxtLink to="/personal" class="navbar__link">Профиль</NuxtLink></li>
+                        <li>
+                            <NuxtLink to="/personal/orders" class="navbar__link navbar__link_order">Заказы</NuxtLink>
+                        </li>
+                        <li><NuxtLink to="/personal/address" class="navbar__link">Адрес</NuxtLink></li>
+                        <li><span @click="cart.opened = true" class="navbar__link">Корзина</span></li>
+                        <li><NuxtLink to="/personal/password" class="navbar__link">Сменить пароль</NuxtLink></li>
+                        <!-- <li><NuxtLink to="/personal/devtools" class="navbar__link">DevTools</NuxtLink></li> -->
+                        <li><span @click="logout" class="navbar__link">Выйти</span></li>
+                    </ul>
+                </nav>
+            </aside>
 
-        <section>
-            <Button @click="visible = true" severity="secondary" class="menu-button">Меню профиля</Button>
-            <NuxtPage />
-        </section>
+            <section>
+                <Button @click="visible = true" severity="secondary" class="menu-button">Меню профиля</Button>
+                <NuxtPage />
+            </section>
 
-        <Sidebar v-model:visible="visible" header="Меню профиля">
-            <nav>
-                <ul class="mobilemenu">
-                    <li><NuxtLink to="/personal">Профиль</NuxtLink></li>
-                    <li><NuxtLink to="/personal/orders">Заказы</NuxtLink></li>
-                    <li><NuxtLink to="/personal/address">Адрес</NuxtLink></li>
-                    <li><button @click="opencart">Корзина</button></li>
-                    <li><NuxtLink to="/personal/password">Сменить пароль</NuxtLink></li>
-                    <!-- <li><NuxtLink to="/personal/devtools">DevTools</NuxtLink></li> -->
-                    <li><button @click="logout">Выйти</button></li>
-                </ul>
-            </nav>
-        </Sidebar>
+            <Sidebar v-model:visible="visible" header="Меню профиля">
+                <nav>
+                    <ul class="mobilemenu">
+                        <li><NuxtLink to="/personal">Профиль</NuxtLink></li>
+                        <li><NuxtLink to="/personal/orders">Заказы</NuxtLink></li>
+                        <li><NuxtLink to="/personal/address">Адрес</NuxtLink></li>
+                        <li><button @click="opencart">Корзина</button></li>
+                        <li><NuxtLink to="/personal/password">Сменить пароль</NuxtLink></li>
+                        <!-- <li><NuxtLink to="/personal/devtools">DevTools</NuxtLink></li> -->
+                        <li><button @click="logout">Выйти</button></li>
+                    </ul>
+                </nav>
+            </Sidebar>
+        </div>
     </div>
 </template>
 

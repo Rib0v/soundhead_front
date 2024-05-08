@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
+</script>
+
 <template>
     <TabView v-model:active-index="useAuthStore().dialogTab" id="sign-tabview">
         <TabPanel>

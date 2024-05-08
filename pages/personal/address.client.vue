@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useForm, configure } from "vee-validate";
+import { useForm } from "vee-validate";
 import * as yup from "yup";
 import { setLocale } from "yup";
 import { ru } from "@/assets/yupLocaleRu.js";
@@ -46,46 +46,49 @@ async function init() {
 <template>
     <div>
         <Title>Адрес</Title>
-        <h1>Адрес</h1>
-        <p v-if="user.address" class="address">{{ user.address }}</p>
-        <p v-else class="address">Адрес не указан. Вы можете это исправить ;)</p>
-        <Button @click="addressPopupVisible = true" label="Уточнить" raised class="submit-button">
-            <template #icon>
-                <i class="icon_edit edit-icon"></i>
-            </template>
-        </Button>
+        <template v-if="!auth.loading">
+            <h1>Адрес</h1>
+            <p v-if="user.address" class="address">{{ user.address }}</p>
+            <p v-else class="address">Адрес не указан. Вы можете это исправить ;)</p>
+            <Button @click="addressPopupVisible = true" label="Уточнить" raised class="submit-button">
+                <template #icon>
+                    <i class="icon_edit edit-icon"></i>
+                </template>
+            </Button>
 
-        <Dialog
-            v-model:visible="addressPopupVisible"
-            modal
-            dismissableMask
-            header="Редактировать адрес"
-            :style="{ width: '30rem' }"
-        >
-            <Textarea
-                v-model="address"
-                v-bind="addressAttrs"
-                :invalid="!!errors.address"
-                rows="8"
-                autoResize
-                placeholder="Введите адрес"
-                class="textarea"
-            />
-            <small v-if="errors.address || errorsFromBack.address" class="error">
-                {{ errors.address || errorsFromBack.address }}
-            </small>
+            <Dialog
+                v-model:visible="addressPopupVisible"
+                modal
+                dismissableMask
+                header="Редактировать адрес"
+                :style="{ width: '30rem' }"
+            >
+                <textarea
+                    v-model="address"
+                    v-bind="addressAttrs"
+                    name="address"
+                    rows="8"
+                    placeholder="Введите адрес"
+                    :class="{ invalid: !!errors.address }"
+                    class="textinput textarea"
+                ></textarea>
 
-            <div class="confirm-buttons">
-                <Button
-                    label="Отмена"
-                    @click="addressPopupVisible = false"
-                    severity="danger"
-                    raised
-                    class="submit-button"
-                />
-                <Button @click="onSubmit" label="Сохранить" :loading="auth.loading" raised class="submit-button" />
-            </div>
-        </Dialog>
+                <small v-if="errors.address || errorsFromBack.address" class="error">
+                    {{ errors.address || errorsFromBack.address }}
+                </small>
+
+                <div class="confirm-buttons">
+                    <Button
+                        label="Отмена"
+                        @click="addressPopupVisible = false"
+                        severity="danger"
+                        raised
+                        class="submit-button"
+                    />
+                    <Button @click="onSubmit" label="Сохранить" :loading="auth.loading" raised class="submit-button" />
+                </div>
+            </Dialog>
+        </template>
     </div>
 </template>
 
@@ -105,6 +108,7 @@ async function init() {
 
 .textarea {
     width: 100%;
+    resize: none;
 }
 
 .error {

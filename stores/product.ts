@@ -2,6 +2,7 @@ export const useProductStore = defineStore("product", () => {
     const favorites = ref<Product[]>([]);
     const favoritesOpened = ref(false);
     const compared = ref<number[]>([]);
+    const loading = ref(false);
 
     function init() {
         favorites.value = loadArrFromLocalStorage("favorites");
@@ -84,6 +85,7 @@ export const useProductStore = defineStore("product", () => {
         favorites,
         favoritesOpened,
         compared,
+        loading,
         init,
         addToFavorites,
         removeFromFavorites,

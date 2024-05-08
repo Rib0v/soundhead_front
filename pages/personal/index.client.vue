@@ -46,53 +46,59 @@ async function init() {
     name.value = user.name || "";
     phone.value = user.phone || "";
 }
+
+const visible = computed(() => user.emailChanging || !auth.loading);
 </script>
 
 <template>
     <div>
         <Title>Профиль</Title>
-        <h1>Профиль</h1>
+        <h1 v-if="visible">Профиль</h1>
         <div class="wrapper">
             <div class="email-group">
-                <span>Электронная почта: </span>
+                <span v-if="visible">Электронная почта: </span>
                 <UserChangeEmail />
-                <span class="email">{{ user.email }}</span>
+                <span v-if="visible" class="email">{{ user.email }}</span>
             </div>
 
-            <form @submit.prevent="onSubmit" class="form">
-                <div class="group">
-                    <label for="name">Имя:</label>
-                    <InputText
-                        id="name"
-                        v-model="name"
-                        v-bind="nameAttrs"
-                        :invalid="!!errors.name"
-                        placeholder="Укажите имя"
-                        class="text-input"
-                    />
+            <template v-if="visible">
+                <form @submit.prevent="onSubmit" class="form">
+                    <div class="group">
+                        <label for="name">Имя:</label>
+                        <input
+                            type="text"
+                            v-model="name"
+                            v-bind="nameAttrs"
+                            :class="{ invalid: !!errors.name }"
+                            placeholder="Укажите имя"
+                            id="name"
+                            class="textinput input"
+                        />
 
-                    <small v-if="errors.name || errorsFromBack.name" class="error">
-                        {{ errors.name || errorsFromBack.name }}
-                    </small>
-                </div>
-                <div class="group">
-                    <label for="phone">Телефон:</label>
-                    <InputText
-                        id="phone"
-                        v-model="phone"
-                        v-bind="phoneAttrs"
-                        :invalid="!!errors.phone"
-                        placeholder="Укажите телефон"
-                        class="text-input"
-                    />
+                        <small v-if="errors.name || errorsFromBack.name" class="error">
+                            {{ errors.name || errorsFromBack.name }}
+                        </small>
+                    </div>
+                    <div class="group">
+                        <label for="phone">Телефон:</label>
+                        <input
+                            type="text"
+                            v-model="phone"
+                            v-bind="phoneAttrs"
+                            :class="{ invalid: !!errors.phone }"
+                            placeholder="Укажите телефон"
+                            id="phone"
+                            class="textinput input"
+                        />
 
-                    <small v-if="errors.phone || errorsFromBack.phone" class="error">
-                        {{ errors.phone || errorsFromBack.phone }}
-                    </small>
-                </div>
-                <p v-if="isChanged" class="success">Информация успешно обновлена.</p>
-                <Button type="submit" :loading="auth.loading" label="Сохранить" raised class="submit-button" />
-            </form>
+                        <small v-if="errors.phone || errorsFromBack.phone" class="error">
+                            {{ errors.phone || errorsFromBack.phone }}
+                        </small>
+                    </div>
+                    <p v-if="isChanged" class="success">Информация успешно обновлена.</p>
+                    <Button type="submit" :loading="auth.loading" label="Сохранить" raised class="submit-button" />
+                </form>
+            </template>
         </div>
     </div>
 </template>
@@ -134,7 +140,7 @@ label {
     gap: 1.25rem;
 }
 .submit-button,
-.text-input {
+.input {
     height: 2.75rem;
 }
 </style>

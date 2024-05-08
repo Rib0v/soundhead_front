@@ -1,87 +1,102 @@
 <script setup lang="ts">
-import type { PageState } from "primevue/paginator";
 const filterbarVisible = ref(false);
 
-const { query } = useRoute();
+let page = 1;
 const { productsPerPage } = useRuntimeConfig().public;
+const { query } = useRoute();
+const queryParams = ref<CommonObject>(query);
 
-const paginationQuery = reactive<Pagination>({});
-const firstRow = ref(0);
-const perpage = ref(Number(query.perpage) || Number(productsPerPage));
-
-const refQueryParams = ref<CommonObject>(query);
-
-const { data: products } = await useFetch<ProductList>(addApiBase("products"), {
-    query: refQueryParams,
+const { pending, data: products } = useLazyFetch<ProductList>(addApiBase("products"), {
+    query: queryParams,
 });
-const pagination = ref({
-    currentPage: products.value?.meta?.current_page || 1,
-    lastPage: products.value?.meta?.last_page || 1,
-    total: products.value?.meta?.total || 0,
-});
+const lastPage = computed(() => products.value?.meta.last_page || 1);
+const total = computed(() => products.value?.meta.total || 0);
 
-parseUrlParams(query);
+const additionalProducts = ref<Product[]>([]);
+const loadingMore = ref(false);
 
-function parseUrlParams(params: CommonObject) {
-    if (params?.page > 1) paginationQuery.page = params.page;
-    if (params?.perpage && params?.perpage != productsPerPage) paginationQuery.perpage = params.perpage;
-    firstRow.value = (pagination.value.currentPage - 1) * perpage.value;
+function changeQueryParams(query: CommonObject) {
+    page = 1;
+    additionalProducts.value = [];
+    queryParams.value = query;
+    navigateTo({ query });
 }
 
-const filterQueryParams = ref<CommonObject>({});
-
-function changeQP(query: CommonObject) {
-    filterQueryParams.value = query;
-    resetPage();
-}
-
-const totalQueryParams = computed(() => {
-    return {
-        ...paginationQuery,
-        ...filterQueryParams.value,
-    };
-});
-
-watch(totalQueryParams, async () => {
-    refQueryParams.value = totalQueryParams.value;
-});
-
+const observerTarget = ref<HTMLInputElement | null>(null);
+let intersect = false;
 onMounted(() => {
-    watch(totalQueryParams, (newVal, oldVal) => {
-        navigateTo({ query: { ...totalQueryParams.value } });
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            intersect = true;
+            if (!loadingMore.value) loadMoreProducts();
+        } else {
+            intersect = false;
+        }
     });
+
+    if (observerTarget.value) {
+        observer.observe(observerTarget.value);
+    }
 });
 
-function resetPage() {
-    delete paginationQuery.page;
-    pagination.value.currentPage = 1;
-    firstRow.value = 0;
-    scrollUp();
+let loadingCounter = 1;
+function getDelay() {
+    const delay = loadingCounter * 120 + 200;
+    if (++loadingCounter > productsPerPage) loadingCounter = 1;
+    return delay;
 }
 
-function changePage(event: PageState) {
-    if (event.page == 0) {
-        // в компоненте отсчёт страниц идёт с 0
-        delete paginationQuery.page;
-    } else {
-        paginationQuery.page = event.page + 1;
+async function loadMoreProducts() {
+    if (page >= lastPage.value) return;
+
+    page++;
+
+    const waitingProductsQuantity =
+        page < lastPage.value ? productsPerPage : total.value - (lastPage.value - 1) * productsPerPage;
+
+    loadingMore.value = true;
+    loadingCounter = 1;
+
+    /**
+     * Чтобы анимации появления товаров работали бесшовно, скелетон и реальная
+     * карточка товара должны быть внутри одного контейнера, так как загрузка
+     * может завершится прямо посреди анимации. Поэтому добавляем в массив
+     * "пустые" товары, чтобы появились карточки-скелетоны, а потом наполняем
+     * эти же объекты данными и скелетон превращается в реальную карточку товара.
+     * Карточка переключается в режим скелетона, есле переданный id равен 0.
+     */
+    for (let i = 0; i < waitingProductsQuantity; i++) {
+        additionalProducts.value.push({ id: 0, name: "", slug: "", price: 0, image: "" });
     }
 
-    if (event.rows == productsPerPage) {
-        delete paginationQuery.perpage;
-    } else {
-        paginationQuery.perpage = event.rows;
-    }
-    scrollUp();
-}
-
-const scrollTarget = ref<HTMLInputElement | null>(null);
-function scrollUp() {
-    setTimeout(() => {
-        scrollTarget.value?.scrollIntoView({
-            behavior: "smooth",
+    try {
+        const resp = await $fetch<ProductList>(addApiBase("products"), {
+            query: {
+                ...queryParams.value,
+                page: page,
+                perpage: productsPerPage,
+            },
         });
-    }, 100);
+
+        const len = additionalProducts.value.length;
+
+        for (let index = len - waitingProductsQuantity; index < len; index++) {
+            if (resp.data && resp.data[0]) {
+                additionalProducts.value[index] = resp.data[0];
+                // забрать сразу объект, возвращаемый из shift, TS не даёт
+                resp.data.shift();
+            }
+        }
+    } catch (error) {
+        additionalProducts.value.splice(-waitingProductsQuantity);
+    }
+    loadingMore.value = false;
+
+    if (intersect) {
+        setTimeout(() => {
+            loadMoreProducts();
+        }, 100);
+    }
 }
 </script>
 
@@ -90,10 +105,10 @@ function scrollUp() {
         <Title>Каталог</Title>
         <div class="wrapper">
             <div class="filters">
-                <CatalogFilter @change-query-params="changeQP" />
+                <CatalogFilter @change-query-params="changeQueryParams" />
             </div>
 
-            <section ref="scrollTarget" class="data">
+            <section class="data">
                 <div class="sidebar">
                     <h1>Каталог</h1>
                     <Button @click="filterbarVisible = true" severity="secondary" class="sidebar__button">
@@ -103,28 +118,70 @@ function scrollUp() {
 
                     <Sidebar v-model:visible="filterbarVisible" header="Фильтры">
                         <div class="sidebar__panel">
-                            <CatalogFilter @change-query-params="changeQP" />
+                            <CatalogFilter @change-query-params="changeQueryParams" />
                         </div>
                     </Sidebar>
                 </div>
 
                 <div class="catalog__cards">
-                    <ProductCard v-for="item in products?.data || []" :item="item" :key="item.id" />
+                    <template v-if="!pending">
+                        <!-- 
+                        При SSR элементы внутри тега Transition не отрисовываются,
+                        поэтому нужно подгружать первую порцию товаров без анимации
+                        -->
+                        <ProductCard v-for="(item, index) in products?.data" :idx="index" :item="item" :key="index" />
+                        <template v-for="(item, index) in additionalProducts">
+                            <Transition appear>
+                                <ProductCard
+                                    :idx="index + productsPerPage"
+                                    :item="item"
+                                    :key="index + productsPerPage"
+                                    :style="`--delay: ${getDelay()}ms`"
+                                />
+                            </Transition>
+                        </template>
+                    </template>
+
+                    <template v-if="pending">
+                        <template v-for="n in productsPerPage">
+                            <ProductCard loading :idx="0" />
+                        </template>
+                    </template>
                 </div>
 
-                <Paginator
-                    @page="changePage"
-                    v-model:first="firstRow"
-                    :rows="perpage"
-                    :totalRecords="products?.meta?.total || 0"
-                    :rowsPerPageOptions="[12, 24, 48]"
-                ></Paginator>
+                <div v-show="!pending" ref="observerTarget"></div>
             </section>
         </div>
     </div>
 </template>
 
 <style scoped lang="scss">
+.v-enter-active {
+    transition: 300ms ease;
+    transition-delay: var(--delay);
+    pointer-events: none;
+}
+
+.v-leave-active {
+    transition: 0ms;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+    transform: translateY(50%);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 1.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
 .wrapper {
     display: grid;
     grid-template-columns: 1fr;
@@ -185,18 +242,22 @@ function scrollUp() {
     &__cards {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 0.75rem;
+        gap: 0.5rem;
 
         @media (min-width: 375px) {
             grid-template-columns: repeat(2, 1fr);
         }
 
         @media (min-width: 450px) {
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         @media (min-width: 700px) {
             grid-template-columns: repeat(3, 1fr);
+
+            @media (min-width: 768px) {
+                gap: 1rem;
+            }
         }
 
         @media (min-width: 1350px) {

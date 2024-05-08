@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const auth = useAuthStore();
 const order = useOrderStore();
 order.getUserOrders(useAuthStore().authData.userId);
 </script>
@@ -6,34 +7,36 @@ order.getUserOrders(useAuthStore().authData.userId);
 <template>
     <div>
         <Title>Мои заказы</Title>
-        <h1>Мои заказы</h1>
-        <div v-if="order.orderList.length > 0" class="wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Дата</th>
-                        <th>Номер</th>
-                        <th>Статус</th>
-                        <th>Стоимость</th>
-                        <th>Ссылка</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="theOrder in order.orderList">
-                        <td>{{ new Date(theOrder.created_at).toLocaleString("ru-RU") }}</td>
-                        <td>{{ 10000 + theOrder.id }}</td>
-                        <td>{{ theOrder.status }}</td>
-                        <td>{{ theOrder.total }} р.</td>
-                        <td>
-                            <NuxtLink :to="`/personal/orders/${theOrder.id}`" class="link">Просмотреть</NuxtLink>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <template v-else>
-            <p>Заказов пока нет. Вы можете перейти в каталог и выбрать что-нибудь себе по душе!</p>
-            <Button @click="navigateTo('/catalog')" label="Каталог" raised />
+        <template v-if="!auth.loading">
+            <h1>Мои заказы</h1>
+            <div v-if="order.orderList.length > 0" class="wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Номер</th>
+                            <th>Статус</th>
+                            <th>Стоимость</th>
+                            <th>Ссылка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="theOrder in order.orderList">
+                            <td>{{ new Date(theOrder.created_at).toLocaleString("ru-RU") }}</td>
+                            <td>{{ 10000 + theOrder.id }}</td>
+                            <td>{{ theOrder.status }}</td>
+                            <td>{{ theOrder.total }} р.</td>
+                            <td>
+                                <NuxtLink :to="`/personal/orders/${theOrder.id}`" class="link">Просмотреть</NuxtLink>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <template v-else>
+                <p>Заказов пока нет. Вы можете перейти в каталог и выбрать что-нибудь себе по душе!</p>
+                <Button @click="navigateTo('/catalog')" label="Каталог" raised />
+            </template>
         </template>
     </div>
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import { useForm, configure } from "vee-validate";
 import * as yup from "yup";
 import { setLocale } from "yup";
@@ -46,13 +48,14 @@ const errorsFromBack = computed(() => {
                 <InputGroupAddon>
                     <label for="name"><i class="icon_person_outline icon"></i></label>
                 </InputGroupAddon>
-                <InputText
+                <input
                     type="text"
                     v-model="name"
                     v-bind="nameAttrs"
-                    :invalid="!!errors.name"
-                    id="name"
+                    :class="{ invalid: !!errors.name }"
                     placeholder="имя"
+                    id="name"
+                    class="textinput input"
                 />
             </InputGroup>
             <small v-if="errors.name || errorsFromBack.name" class="error">
@@ -63,13 +66,14 @@ const errorsFromBack = computed(() => {
                 <InputGroupAddon>
                     <label for="email2"><i class="icon_email icon"></i></label>
                 </InputGroupAddon>
-                <InputText
+                <input
                     type="email"
                     v-model="email"
                     v-bind="emailAttrs"
-                    :invalid="!!errors.email"
+                    :class="{ invalid: !!errors.email }"
                     placeholder="email"
                     id="email2"
+                    class="textinput input"
                 />
             </InputGroup>
 
@@ -81,13 +85,14 @@ const errorsFromBack = computed(() => {
                 <InputGroupAddon>
                     <label for="password2"><i class="icon_vpn_key icon"></i></label>
                 </InputGroupAddon>
-                <InputText
+                <input
                     type="password"
                     v-model="password"
                     v-bind="passwordAttrs"
-                    :invalid="!!errors.password"
-                    id="password2"
+                    :class="{ invalid: !!errors.password }"
                     placeholder="пароль"
+                    id="password2"
+                    class="textinput input"
                 />
             </InputGroup>
 
@@ -99,13 +104,14 @@ const errorsFromBack = computed(() => {
                 <InputGroupAddon>
                     <label for="password_conf"><i class="icon_check_circle icon"></i></label>
                 </InputGroupAddon>
-                <InputText
+                <input
                     type="password"
                     v-model="passwordConfirm"
                     v-bind="passwordConfirmAttrs"
-                    :invalid="!!errors.password_confirmation"
-                    id="password_conf"
+                    :class="{ invalid: !!errors.password_confirmation }"
                     placeholder="подтверждение пароля"
+                    id="password_conf"
+                    class="textinput input"
                 />
             </InputGroup>
 
@@ -127,6 +133,10 @@ const errorsFromBack = computed(() => {
 .submit-button {
     margin-top: 0.75rem;
     height: 2.75rem;
+}
+.input {
+    border-radius: 0 0.25rem 0.25rem 0;
+    width: 100%;
 }
 .error {
     color: red;

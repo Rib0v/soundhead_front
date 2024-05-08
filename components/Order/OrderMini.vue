@@ -91,7 +91,7 @@ hr {
     &__image {
         width: 5rem;
         height: 5rem;
-        object-fit: cover;
+        object-fit: contain;
         border-radius: 0.5rem;
         grid-row: span 2; /* этот убрать потом */
     }

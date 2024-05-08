@@ -3,30 +3,17 @@ const product = useProductStore();
 </script>
 
 <template>
-    <NuxtLink to="/product/compare" class="link">
-        <span class="cart p-overlay-badge">
+    <NuxtLink to="/product/compare" aria-label="Сравнение товаров" class="link" no-prefetch>
+        <span class="cart">
             <span class="icon_leaderboard icon"></span>
-            <Badge
-                class="badge"
-                v-show="product.compared.length"
-                :value="product.compared.length"
-                severity="danger"
-            ></Badge>
+            <BadgeCounter :count="product.compared.length" />
         </span>
     </NuxtLink>
 </template>
 
 <style scoped>
-.badge {
-    font-size: 0.6rem;
-    min-width: 0;
-    height: auto;
-    line-height: 0.6rem;
-    padding: 0.25rem 0.35rem;
-    transform: translate(20%, -40%);
-    user-select: none;
-}
 .cart {
+    position: relative;
     display: inline-flex;
     justify-content: center;
     align-items: center;

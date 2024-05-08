@@ -12,8 +12,3 @@ type CheckBoxStates = {
     [key: string]: number[];
 };
 type QueryParams = { [key: string]: string | number };
-
-type Pagination = {
-    page?: number;
-    perpage?: number;
-};

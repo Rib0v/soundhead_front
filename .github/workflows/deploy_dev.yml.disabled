@@ -1,0 +1,27 @@
+name: Deploy dev branch
+
+on:
+    push:
+        branches:
+            - dev
+
+jobs:
+    Deploy-dev:
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Install dependencies
+              run: yarn
+            - name: Set config
+              run: echo '${{ vars.NUXT_CONFIG_DEV }}' > nuxt.config.ts
+            - name: Build Nuxt
+              run: yarn build
+            - name: Copy builded project
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.VDS_IP }}
+                  username: ${{ secrets.VDS_USER }}
+                  key: ${{ secrets.VDS_KEY }}
+                  source: ./.output
+                  target: ${{ vars.LOCATION_FRONT_DEV }}

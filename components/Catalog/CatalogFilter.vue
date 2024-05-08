@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Dropdown from "primevue/dropdown";
+import InputNumber from "primevue/inputnumber";
+import MultiSelect from "primevue/multiselect";
 const emit = defineEmits(["changeQueryParams"]);
 
 const { query } = useRoute();
@@ -51,7 +54,6 @@ const queryParams = computed<QueryParams>(() => {
 
     params = {
         ...params,
-        // ...paginationQuery,
         ...selectedCheckBoxesStringified.value,
         ...selectedBrandsStringified.value,
     };
@@ -64,7 +66,9 @@ watch(queryParams, (newVal, oldVal) => {
     emit("changeQueryParams", queryParams.value);
 });
 
-const { data: dataFilters }: { data: Ref<Filter[]> } = await useFetch(addApiBase("attributes"));
+const { pending, data: dataFilters }: { pending: Ref<boolean>; data: Ref<Filter[]> } = useLazyFetch(
+    addApiBase("attributes")
+);
 const brands = computed<Filter>(() => (dataFilters.value || [])[0] || {});
 const filters = computed<Filter[]>(() => (dataFilters.value || []).slice(1) || []);
 
@@ -72,9 +76,10 @@ loadCheckBoxStatesFromQuery();
 loadBrandStatesFromQuery();
 
 watch(dataFilters, (newVal, oldVal) => {
-    console.log("LOADED");
-    loadCheckBoxStatesFromQuery();
-    loadBrandStatesFromQuery();
+    if (!pending) {
+        loadCheckBoxStatesFromQuery();
+        loadBrandStatesFromQuery();
+    }
 });
 
 function strParamsToArr(value: string): number[] {
@@ -104,9 +109,28 @@ function loadBrandStatesFromQuery(): void {
 
 <template>
     <aside>
-        <div class="filters">
-            <!-- <h2>Параметры</h2> -->
+        <div v-if="pending" class="filters">
+            <h4 class="first-subtitle skeleton loading loading__title"></h4>
+            <span class="skeleton loading loading__input"></span>
+            <h4 class="skeleton loading loading__title"></h4>
+            <span class="skeleton loading loading__input"></span>
+            <h4 class="skeleton loading loading__title"></h4>
+            <div class="pricegroup">
+                <span class="skeleton loading loading__input"></span>
+                <span class="skeleton loading loading__input"></span>
+            </div>
+            <h4 class="skeleton loading loading__title"></h4>
+            <div class="checkbox-wrapper">
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+                <span class="skeleton loading loading__option"></span>
+            </div>
+        </div>
 
+        <div v-else class="filters">
             <h4 class="first-subtitle">Сортировка</h4>
             <Dropdown
                 v-model="sortBySelected"
@@ -124,6 +148,7 @@ function loadBrandStatesFromQuery(): void {
                 filter
                 optionLabel="name"
                 placeholder="Выберите бренд"
+                id="brand"
                 class="select"
             />
 
@@ -147,11 +172,14 @@ function loadBrandStatesFromQuery(): void {
                 <h4>{{ filter.name }}</h4>
                 <div class="checkbox-wrapper">
                     <label v-for="val in filter.vals" :key="val.id">
-                        <input type="checkbox" v-model="checkBoxStates[filter.slug]" :value="val.id" />
+                        <input
+                            type="checkbox"
+                            v-model="checkBoxStates[filter.slug]"
+                            :id="'box' + val.id"
+                            :value="val.id"
+                        />
                         {{ val.name }}
                     </label>
-                    <!-- <input type="checkbox" v-model="checkBoxes[filter.slug]" :value="val.id" :id="'val' + val.id" />
-                    <label :for="'val' + val.id">{{ val.name }}</label> -->
                 </div>
             </div>
         </div>
@@ -183,12 +211,9 @@ h4 {
 }
 .checkbox-wrapper {
     display: flex;
-    /* align-items: center; */
     gap: 1rem;
     flex-wrap: wrap;
     max-width: 15rem;
-    /* max-width: 14rem; */
-    /* white-space: nowrap; */
 }
 
 .pricegroup {
@@ -197,7 +222,26 @@ h4 {
 }
 
 .select {
-    // max-width: 15rem;
     width: 100%;
+}
+
+.loading {
+    border-radius: 0.25rem;
+    display: inline-block;
+
+    &__title {
+        width: 60%;
+        height: 1.5rem;
+    }
+
+    &__input {
+        width: 100%;
+        height: 2rem;
+    }
+
+    &__option {
+        width: 100%;
+        height: 1.25rem;
+    }
 }
 </style>

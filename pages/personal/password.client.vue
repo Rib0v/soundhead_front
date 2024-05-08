@@ -47,13 +47,13 @@ const errorsFromBack = computed(() => {
         <form v-if="!changed" @submit.prevent="onSubmit" class="wrapper">
             <div class="group">
                 <label for="username">Старый пароль</label>
-                <InputText
+                <input
                     type="password"
                     v-model="oldPassword"
                     v-bind="oldPasswordAttrs"
-                    :invalid="!!errors.old_password"
-                    id="username"
-                    class="text-input"
+                    :class="{ invalid: !!errors.old_password }"
+                    id="oldPassword"
+                    class="textinput input"
                 />
                 <small v-if="errors.old_password || errorsFromBack.oldPassword" class="error">
                     {{ errors.old_password || errorsFromBack.oldPassword }}
@@ -61,13 +61,13 @@ const errorsFromBack = computed(() => {
             </div>
             <div class="group">
                 <label for="username">Новый пароль</label>
-                <InputText
+                <input
                     type="password"
                     v-model="newPassword"
                     v-bind="newPasswordAttrs"
-                    :invalid="!!errors.new_password"
-                    id="username"
-                    class="text-input"
+                    :class="{ invalid: !!errors.new_password }"
+                    id="newPassword"
+                    class="textinput input"
                 />
                 <small v-if="errors.new_password || errorsFromBack.newPassword" class="error">
                     {{ errors.new_password || errorsFromBack.newPassword }}
@@ -75,14 +75,13 @@ const errorsFromBack = computed(() => {
             </div>
             <div class="group">
                 <label for="username">Новый пароль повторно</label>
-                <InputText
+                <input
                     type="password"
                     v-model="newPasswordConfirm"
                     v-bind="newPasswordConfirmAttrs"
-                    :invalid="!!errors.new_password_confirmation"
-                    id="username"
-                    aria-describedby="username-help"
-                    class="text-input"
+                    :class="{ invalid: !!errors.new_password_confirmation }"
+                    id="newPasswordConfirm"
+                    class="textinput input"
                 />
                 <small v-if="errors.new_password_confirmation" class="error">
                     {{ errors.new_password_confirmation }}
@@ -107,7 +106,7 @@ const errorsFromBack = computed(() => {
     width: 100%;
 }
 .submit-button,
-.text-input {
+.input {
     height: 2.75rem;
     width: 100%;
 }

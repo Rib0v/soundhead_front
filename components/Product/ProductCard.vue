@@ -3,72 +3,106 @@ const cart = useCartStore();
 const product = useProductStore();
 
 const props = defineProps<{
-    item: Product;
+    item?: Product;
     favoritesMode?: boolean;
+    loading?: boolean;
 }>();
 
-// TODO если будет подгрузка при скролле и много товаров на странице,
-// то вероятно нужно будет сделать подсчет порциями, только для загружаемых
+// TODO если будет много товаров на странице, то вероятно нужно
+// будет сделать подсчет порциями, только для загружаемых
 // и добавлять true вручную, при добавлении товара в корзину
 const isAdded = computed(() => {
-    return cart.cartList.some((item) => item.id === props.item.id);
+    return cart.cartList.some((item) => item.id === props.item?.id);
 });
 const isAddedToCompared = computed(() => {
+    if (!props.item) return false;
     return product.compared.includes(props.item.id);
 });
 const isAddedToFavorites = computed(() => {
-    return product.favorites.some((item) => item.id === props.item.id);
+    return product.favorites.some((item) => item.id === props.item?.id);
 });
 </script>
 
 <template>
     <div class="card">
-        <NuxtLink :to="`/product/${item.slug}`" class="card__image-wrapper" @click="product.closeFavorites">
-            <img :src="item.image" :alt="item.name" loading="lazy" class="card__image" />
-        </NuxtLink>
+        <template v-if="loading || !item || !item.id">
+            <span class="card__image-wrapper skeleton">
+                <img alt="Loading..." class="card__image hidden" />
+            </span>
 
-        <h4 class="card__title">
-            <NuxtLink :to="`/product/${item.slug}`" class="card__link" @click="product.closeFavorites">{{
-                item.name
-            }}</NuxtLink>
-        </h4>
-        <p class="card__price">
-            <NuxtLink :to="`/product/${item.slug}`" class="card__link" @click="product.closeFavorites">
-                {{ item.price.toLocaleString("ru-RU") }} ₽
-            </NuxtLink>
-        </p>
-        <p class="card__status">
-            <NuxtLink :to="`/product/${item.slug}`" class="card__link" @click="product.closeFavorites"
-                >В наличии</NuxtLink
+            <h4 class="card__title">
+                <span class="card__link skeleton loading loading__name"></span>
+            </h4>
+            <p class="card__price">
+                <span class="card__link skeleton loading loading__price"></span>
+            </p>
+            <p class="card__status skeleton loading loading__status">
+                <span class="card__link"></span>
+            </p>
+            <Button disabled aria-label="Добавить в корзину" class="card__add-button card__add-button_loading skeleton">
+                <i class="card__add-button-icon icon_shopping_cart_filled"></i>
+            </Button>
+            <button disabled aria-label="Добавить в избранное" class="card__favorites-button nodisplay">
+                <i class="card__favorites-button-icon icon_favorite_border"></i>
+            </button>
+            <button
+                disabled
+                aria-label="Добавить к сравнению"
+                class="card__favorites-button card__compare-button nodisplay"
             >
-        </p>
-        <Button
-            @click="cart.addProduct(item)"
-            :raised="!isAdded"
-            class="card__add-button"
-            :class="{ 'card__add-button_added': isAdded }"
-        >
-            <i v-if="!isAdded" class="card__add-button-icon icon_shopping_cart_filled"></i>
-            <i v-else class="card__add-button-icon icon_add_shopping_cart"></i>
-        </Button>
-        <button
-            v-if="!favoritesMode"
-            @click="product.addToFavorites(item)"
-            class="card__favorites-button"
-            :class="{ 'card__favorites-button_added': isAddedToFavorites }"
-        >
-            <i class="card__favorites-button-icon icon_favorite_border"></i>
-        </button>
-        <button @click="product.removeFromFavorites(item.id)" v-else class="card__favorites-button">
-            <i class="card__favorites-button-icon icon_close"></i>
-        </button>
-        <button
-            @click="product.addToCompared(item.id)"
-            class="card__favorites-button card__compare-button"
-            :class="{ 'card__favorites-button_added': isAddedToCompared }"
-        >
-            <i class="card__favorites-button-icon icon_leaderboard"></i>
-        </button>
+                <i class="card__favorites-button-icon icon_leaderboard"></i>
+            </button>
+        </template>
+
+        <template v-else>
+            <NuxtLink :to="`/product/${item.slug}`" class="card__image-wrapper" no-prefetch>
+                <img :src="item.image" :alt="item.name" loading="lazy" class="card__image" />
+            </NuxtLink>
+
+            <h4 class="card__title">
+                <NuxtLink :to="`/product/${item.slug}`" class="card__link" no-prefetch>
+                    {{ item.name }}
+                </NuxtLink>
+            </h4>
+            <p class="card__price">
+                <NuxtLink :to="`/product/${item.slug}`" class="card__link" no-prefetch>
+                    {{ item.price.toLocaleString("ru-RU") }} ₽
+                </NuxtLink>
+            </p>
+            <p class="card__status">
+                <NuxtLink :to="`/product/${item.slug}`" class="card__link" no-prefetch> В наличии </NuxtLink>
+            </p>
+            <Button
+                @click="cart.addProduct(item)"
+                aria-label="Добавить в корзину"
+                :raised="!isAdded"
+                class="card__add-button"
+                :class="{ 'card__add-button_added': isAdded }"
+            >
+                <i v-if="!isAdded" class="card__add-button-icon icon_shopping_cart_filled"></i>
+                <i v-else class="card__add-button-icon icon_add_shopping_cart"></i>
+            </Button>
+            <button
+                v-if="!favoritesMode"
+                @click="product.addToFavorites(item)"
+                aria-label="Добавить в избранное"
+                class="card__favorites-button"
+                :class="{ 'card__favorites-button_added': isAddedToFavorites }"
+            >
+                <i class="card__favorites-button-icon icon_favorite_border"></i>
+            </button>
+            <button @click="product.removeFromFavorites(item.id)" v-else class="card__favorites-button">
+                <i class="card__favorites-button-icon icon_close"></i>
+            </button>
+            <button
+                @click="product.addToCompared(item.id)"
+                aria-label="Добавить к сравнению"
+                class="card__favorites-button card__compare-button"
+                :class="{ 'card__favorites-button_added': isAddedToCompared }"
+            >
+                <i class="card__favorites-button-icon icon_leaderboard"></i>
+            </button>
+        </template>
     </div>
 </template>
 
@@ -82,12 +116,13 @@ const isAddedToFavorites = computed(() => {
     grid-template-rows: auto 1fr;
     gap: 0.25rem;
     padding-bottom: 1rem;
-    box-shadow: -2px 2px 6px 0px rgba(0, 0, 0, 0.15);
+    box-shadow: -2px 2px 6px 0px rgba(0, 0, 0, 0.1);
     transition: 150ms;
     overflow: hidden;
 
     @media (min-width: 450px) {
         gap: 0.5rem;
+        box-shadow: -2px 2px 6px 0px rgba(0, 0, 0, 0.15);
     }
 
     @media (hover: hover) {
@@ -126,6 +161,7 @@ const isAddedToFavorites = computed(() => {
         width: 100%;
         height: 100%;
         object-fit: contain;
+        color: white;
         // filter: brightness(0.7) contrast(1.03);
         //filter: contrast(1.2);
         //opacity: 0.5;
@@ -183,6 +219,11 @@ const isAddedToFavorites = computed(() => {
         // &:hover {
         //     background: #008f1f;
         // }
+
+        &_loading {
+            border: 1px solid #e2e8f0;
+            cursor: default;
+        }
 
         @media (min-width: 375px) {
             width: 2.5rem;
@@ -266,6 +307,26 @@ const isAddedToFavorites = computed(() => {
 
     &__compare-button {
         top: 2.5rem;
+    }
+}
+
+.loading {
+    display: inline-block;
+    border-radius: 0.25rem;
+    height: 1.5rem;
+    &__name {
+        width: 100%;
+    }
+    &__price {
+        width: 80%;
+    }
+    &__status {
+        width: 50%;
+        height: 1.2rem;
+
+        &::before {
+            display: none;
+        }
     }
 }
 </style>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import InputGroup from "primevue/inputgroup";
+import InputGroupAddon from "primevue/inputgroupaddon";
 import { useForm, configure } from "vee-validate";
 import * as yup from "yup";
 import { setLocale } from "yup";
@@ -36,13 +38,14 @@ const errorsFromBack = computed(() => {
             <InputGroupAddon>
                 <label for="email"><i class="icon_email icon"></i></label>
             </InputGroupAddon>
-            <InputText
+            <input
                 type="email"
                 v-model="email"
                 v-bind="emailAttrs"
-                :invalid="!!errors.email"
+                :class="{ invalid: !!errors.email }"
                 placeholder="email"
                 id="email"
+                class="textinput input"
             />
         </InputGroup>
 
@@ -54,13 +57,14 @@ const errorsFromBack = computed(() => {
             <InputGroupAddon>
                 <label for="password"><i class="icon_vpn_key icon"></i></label>
             </InputGroupAddon>
-            <InputText
+            <input
                 type="password"
                 v-model="password"
-                id="password"
-                placeholder="пароль"
                 v-bind="passwordAttrs"
-                :invalid="!!errors.password"
+                :class="{ invalid: !!errors.password }"
+                placeholder="пароль"
+                id="password"
+                class="textinput input"
             />
         </InputGroup>
 
@@ -85,6 +89,10 @@ const errorsFromBack = computed(() => {
 }
 .text-input {
     margin: 0.75rem 0 0.5rem;
+}
+.input {
+    border-radius: 0 0.25rem 0.25rem 0;
+    width: 100%;
 }
 .submit-button {
     margin-top: 0.75rem;

@@ -77,10 +77,19 @@ function createThrottle(interval: number) {
 <template>
     <div class="wrapper">
         <form @submit.prevent="onSubmit">
-            <IconField>
-                <InputIcon><button class="icon_search icon"></button></InputIcon>
-                <InputText @focus="show" @blur="hide" v-model="query" placeholder="Найти товар" class="search" />
-            </IconField>
+            <div class="search2">
+                <input
+                    @focus="show"
+                    @blur="hide"
+                    v-model="query"
+                    type="text"
+                    name="search"
+                    aria-label="Поиск"
+                    placeholder="Найти товар"
+                    class="textinput search2__input"
+                />
+                <button class="icon_search" aria-label="Поиск"></button>
+            </div>
         </form>
         <div v-show="visible && query.length && result.length" class="results" :class="{ show: !transparent }">
             <p v-for="product in result" :key="product.id">
@@ -97,6 +106,38 @@ function createThrottle(interval: number) {
 </template>
 
 <style scoped lang="scss">
+.search2 {
+    position: relative;
+
+    &__input {
+        z-index: 3;
+        height: 2.5rem;
+        width: 100%;
+        padding-right: 3rem;
+        border-radius: 0.5rem;
+    }
+
+    button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        width: 2.25rem;
+        z-index: 4;
+        font-size: 1.4rem;
+        line-height: 80%;
+        color: inherit;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: #aaa;
+        transition: 200ms;
+
+        &:hover {
+            color: #666;
+        }
+    }
+}
 .wrapper {
     position: relative;
     width: 100%;
