@@ -77,9 +77,3 @@ sudo docker network create soundhead
 ```bash
 sudo docker compose up nuxt
 ```
-
-
-
-```bash
-
-```
