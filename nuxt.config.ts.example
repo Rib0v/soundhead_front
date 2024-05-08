@@ -8,24 +8,7 @@ export default defineNuxtConfig({
         options: { ripple: true },
 
         components: {
-            include: [
-                "Dropdown",
-                "IconField",
-                "InputGroup",
-                "InputGroupAddon",
-                "InputIcon",
-                "InputNumber",
-                "InputText",
-                "MultiSelect",
-                "Textarea",
-                "Button",
-                "Paginator",
-                "TabView",
-                "TabPanel",
-                "Dialog",
-                "Sidebar",
-                "Badge",
-            ],
+            include: ["Button", "Dialog", "Sidebar"],
         },
         directives: {
             include: ["Ripple"],
@@ -48,7 +31,7 @@ export default defineNuxtConfig({
     routeRules: {
         "/": { prerender: true },
         "/catalog": { swr: true },
-        // '/product/**': { swr : 60 * 60 * 4 },
+        "/product/**": { swr: true },
     },
 
     nitro: {
@@ -63,7 +46,7 @@ export default defineNuxtConfig({
         public: {
             apiBase: "http://localhost",
             apiBaseLocal: "http://localhost",
-            apiPort: "80",
+            apiPort: "8000",
             productsPerPage: 12,
             searchThrottleInterval: 500,
         },

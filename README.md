@@ -8,26 +8,23 @@ Frontend-часть интернет-магазина. Стек: `Vue3` + `Nuxt3
 
 # Как развернуть локально
 
-Устанавливаем зависимости
+*Примечание: в кажестве менеджера пакетов используется классический* `Yarn v1.22.22`.
+
+Устанавливаем зависимости:
 
 ```bash
 yarn
 ```
 
-В файле `nuxt.config.ts` указываем адрес и порт сервера
+Копируем файл конфига:
 
-```js
-runtimeConfig: {
-  public: {
-    apiBase: "http://localhost",
-    apiBaseLocal: "http://localhost",
-    apiPort: "80",
-    // ...
-  },
-},
+```bash
+cp nuxt.config.ts.example nuxt.config.ts
 ```
 
-Запускаем
+Если backend работает не на `8000` порту — меняем в конфиге переменную `apiPort`.
+
+Запускаем:
 
 ```bash
 yarn dev
@@ -42,7 +39,8 @@ yarn dev
 ##### Установка
 
 ```bash
-# Копируем файл конфига
+# Копируем файл конфига и файл с переменными окружения
+cp nuxt.config.ts.example nuxt.config.ts
 cp .env.example .env
 
 # Записываем id хоста в переменную, чтобы
