@@ -23,13 +23,16 @@ jobs:
                   host: ${{ secrets.VDS_IP }}
                   username: ${{ secrets.VDS_USER }}
                   key: ${{ secrets.VDS_KEY }}
-                  source: ./nuxt.config.ts
+                  source: ./.output
                   target: ${{ vars.LOCATION_FRONT_DEV }}
-            - name: Copy builded project
-              uses: appleboy/scp-action@v0.1.7
+            - name: restart nodejs process
+              uses: appleboy/ssh-action@v1.0.3
               with:
                   host: ${{ secrets.VDS_IP }}
                   username: ${{ secrets.VDS_USER }}
                   key: ${{ secrets.VDS_KEY }}
-                  source: ./.output
-                  target: ${{ vars.LOCATION_FRONT_DEV }}
+                  script: |
+                      echo "Start"
+                      set -e
+                      pm2 restart nuxtdev
+                      echo "Finish"
