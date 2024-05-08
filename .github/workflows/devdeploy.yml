@@ -32,6 +32,7 @@ jobs:
                   username: ${{ secrets.VDS_USER }}
                   key: ${{ secrets.VDS_KEY }}
                   script: |
+                      cd ~/
                       echo "Start"
                       set -e
                       pm2 restart nuxtdev
