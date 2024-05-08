@@ -48,7 +48,9 @@ const isSwiperFullyLoaded = ref(false);
                     <div class="swiper-button-next swiper-button-disabled"></div>
                 </div>
                 <div class="lilslides">
-                    <img v-for="photo in firstFivePhotos" :src="photo" :alt="name" class="lilslides__slide" />
+                    <div v-for="photo in firstFivePhotos" class="lilslides__slide">
+                        <img :src="photo" :alt="name" />
+                    </div>
                 </div>
             </template>
         </template>
@@ -72,11 +74,13 @@ const isSwiperFullyLoaded = ref(false);
                         <div class="swiper-button-next swiper-button-disabled"></div>
                     </div>
                     <div class="lilslides">
-                        <img v-for="photo in firstFivePhotos" :src="photo" :alt="name" class="lilslides__slide" />
+                        <div v-for="photo in firstFivePhotos" class="lilslides__slide">
+                            <img :src="photo" :alt="name" />
+                        </div>
                     </div>
                 </template>
                 <LazyProductSwiper
-                    @vnodeMounted="isSwiperFullyLoaded = true"
+                    @vue:mounted="isSwiperFullyLoaded = true"
                     :photos="photos || []"
                     :name="name || ''"
                 />
@@ -102,6 +106,7 @@ const isSwiperFullyLoaded = ref(false);
 .wrapper {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .bigslide {
@@ -134,13 +139,22 @@ const isSwiperFullyLoaded = ref(false);
     column-gap: 0.5rem;
 
     &__slide {
+        position: relative;
         width: 100%;
         height: 100%;
-        object-fit: contain;
         opacity: 0.4;
 
         &:first-child {
             opacity: 1;
+        }
+
+        img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
     }
 
