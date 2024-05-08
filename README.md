@@ -38,16 +38,10 @@ yarn dev
 
 ##### Установка
 
-Копируем файл конфига:
+Копируем файл конфига  и файл с переменными окружения:
 
 ```bash
-cp nuxt.config.ts.example nuxt.config.ts
-```
-
-И файл с переменными окружения для `docker`:
-
-```bash
-cp .env.example .env
+cp nuxt.config.ts.example nuxt.config.ts && cp .env.example .env
 ```
 
 Записываем id хоста в переменную, чтобы не было проблем с правами доступа к файлам:
