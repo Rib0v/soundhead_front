@@ -1,41 +1,88 @@
 <script setup lang="ts">
-// Import Swiper Vue.js components
-import { Swiper, SwiperSlide } from "swiper/vue";
-import { Navigation, Thumbs } from "swiper/modules";
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-// import "swiper/css/thumbs";
-
-defineProps<{
-    name: string;
-    photos: string[];
+const props = defineProps<{
+    name?: string;
+    photos?: string[];
 }>();
 
-const thumbsSwiper = ref();
+/**
+ * Если swiper загрузить до события mounted,
+ * то время от времени вылетает ошибка.
+ * Если загрузить после - не будет рендериться
+ * на стороне сервера. Поэтому пришлось делать
+ * фейковый слайдер, который отображается
+ * до тех пор, пока не загрузится настоящий.
+ */
+const isMounted = ref(false);
+const firstFivePhotos = computed(() => (props.photos ? props.photos.slice(0, 5) : []));
+const dataIsLoaded = computed(() => props.photos && props.photos.length);
+onMounted(() => {
+    isMounted.value = true;
+});
 
-const setThumbsSwiper = (swiper: any) => {
-    thumbsSwiper.value = swiper;
-};
+/**
+ * Но даже после события mounted загрузка компонента swiper занимает время.
+ * И чтобы не блокировать страницу, Swiper грузится как Lazy компонент.
+ * А чтобы пользователь не смотрел на белый экран, фотки грузятся паралельно
+ * и отображаются в виде фейкового слайдера, пока не загрузится настоящий.
+ */
+const isSwiperFullyLoaded = ref(false);
 </script>
 
 <template>
-    <swiper
-        class="mySwiper"
-        :spaceBetween="50"
-        :navigation="true"
-        :thumbs="{ swiper: thumbsSwiper }"
-        :modules="[Navigation, Thumbs]"
-    >
-        <SwiperSlide v-for="item in photos">
-            <img :src="item" :alt="name" />
-        </SwiperSlide>
-    </swiper>
-    <swiper @swiper="setThumbsSwiper" :spaceBetween="10" :slidesPerView="5" :modules="[Thumbs]" class="myThumbSwiper">
-        <SwiperSlide v-for="item in photos">
-            <img :src="item" :alt="name" />
-        </SwiperSlide>
-    </swiper>
+    <div class="wrapper">
+        <template v-if="!isMounted">
+            <template v-if="!dataIsLoaded">
+                <div class="bigslide">
+                    <div class="skeleton bigslide__skeleton"></div>
+                    <div class="swiper-button-prev swiper-button-disabled"></div>
+                    <div class="swiper-button-next swiper-button-disabled"></div>
+                </div>
+                <div class="lilslides">
+                    <div v-for="n in 5" class="skeleton lilslides__slide lilslides__skeleton"></div>
+                </div>
+            </template>
+            <template v-else>
+                <div class="bigslide">
+                    <img :src="firstFivePhotos[0]" :alt="name" />
+                    <div class="swiper-button-prev swiper-button-disabled"></div>
+                    <div class="swiper-button-next swiper-button-disabled"></div>
+                </div>
+                <div class="lilslides">
+                    <img v-for="photo in firstFivePhotos" :src="photo" :alt="name" class="lilslides__slide" />
+                </div>
+            </template>
+        </template>
+
+        <template v-else>
+            <template v-if="!dataIsLoaded">
+                <div class="bigslide">
+                    <div class="skeleton bigslide__skeleton"></div>
+                    <div class="swiper-button-prev swiper-button-disabled"></div>
+                    <div class="swiper-button-next swiper-button-disabled"></div>
+                </div>
+                <div class="lilslides">
+                    <div v-for="n in 5" class="skeleton lilslides__slide lilslides__skeleton"></div>
+                </div>
+            </template>
+            <template v-else>
+                <template v-if="!isSwiperFullyLoaded">
+                    <div class="bigslide">
+                        <img :src="firstFivePhotos[0]" :alt="name" />
+                        <div class="swiper-button-prev swiper-button-disabled"></div>
+                        <div class="swiper-button-next swiper-button-disabled"></div>
+                    </div>
+                    <div class="lilslides">
+                        <img v-for="photo in firstFivePhotos" :src="photo" :alt="name" class="lilslides__slide" />
+                    </div>
+                </template>
+                <LazyProductSwiper
+                    @vnodeMounted="isSwiperFullyLoaded = true"
+                    :photos="photos || []"
+                    :name="name || ''"
+                />
+            </template>
+        </template>
+    </div>
 </template>
 
 <style>
@@ -52,68 +99,53 @@ const setThumbsSwiper = (swiper: any) => {
 </style>
 
 <style scoped lang="scss">
-.swiper {
-    --swiper-navigation-color: #000;
-    --swiper-pagination-color: #000;
+.wrapper {
     width: 100%;
     height: 100%;
-    // height: 480px;
-    // padding: 50px;
 }
 
-.swiper-slide {
-    text-align: center;
-    font-size: 18px;
-    background: #fff;
-    background-size: cover;
-    background-position: center;
-
-    /* Center slide text vertically */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-}
-.swiper-button-next {
-    color: red;
-}
-
-.mySwiper {
-    // height: 100%;
+.bigslide {
+    --swiper-navigation-color: #000;
+    position: relative;
     width: 100%;
     height: 80%;
-    // padding-left: 100px;
 
-    .swiper-slide img {
+    img {
         width: 100%;
         height: 100%;
         object-fit: contain;
     }
+
+    &__skeleton {
+        position: absolute;
+        top: 0rem;
+        bottom: 0.5rem;
+        left: 0rem;
+        right: 0rem;
+        border-radius: 0.75rem;
+    }
 }
 
-.myThumbSwiper {
+.lilslides {
+    width: 100%;
     height: 20%;
-    box-sizing: border-box;
-    padding: 10px 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    column-gap: 0.5rem;
 
-    .swiper-slide {
-        width: 25%;
+    &__slide {
+        width: 100%;
         height: 100%;
-
+        object-fit: contain;
         opacity: 0.4;
-        // width: 100px;
-        // height: 300px;
-        // margin-right: 15px;
-        // padding-left: 15px;
+
+        &:first-child {
+            opacity: 1;
+        }
     }
-    .swiper-slide-thumb-active {
-        opacity: 1;
+
+    &__skeleton {
+        border-radius: 0.75rem;
     }
 }
 </style>

@@ -4,7 +4,6 @@ import TabPanel from "primevue/tabpanel";
 
 const cartStore = useCartStore();
 const { cartList } = storeToRefs(cartStore);
-const productStore = useProductStore();
 
 const {
     data: product,
@@ -19,31 +18,22 @@ if (error?.value?.statusCode === 404) {
 const isAdded = computed(() => {
     return cartList.value.find((item) => item.id == product?.value?.data?.id);
 });
-
-watch(pending, () => {
-    if (pending.value) {
-        productStore.loading = true;
-    } else {
-        productStore.loading = false;
-    }
-});
 </script>
 
 <template>
     <div>
-        <template v-if="product?.data">
-            <Title>{{ product?.data?.name }}</Title>
+        <Title>{{ product?.data?.name || "Наушники" }}</Title>
 
-            <p class="backlink">
-                <NuxtLink to="/catalog"><span>ᐊ</span> Каталог</NuxtLink>
-            </p>
-
-            <div class="product">
-                <div class="product__header">
-                    <div class="product__gallery">
-                        <LazyProductGallery :name="product?.data?.name || ''" :photos="product?.data?.photos || []" />
-                    </div>
-                    <div class="product__right-wrapper">
+        <p class="backlink">
+            <NuxtLink to="/catalog"><span>ᐊ</span> Каталог</NuxtLink>
+        </p>
+        <div class="product">
+            <div class="product__header">
+                <div class="product__gallery">
+                    <ProductGallery :name="product?.data?.name" :photos="product?.data?.photos" />
+                </div>
+                <div class="product__right-wrapper">
+                    <template v-if="!pending">
                         <h1>{{ product?.data?.name }}</h1>
                         <p class="product__id">Артикул товара: 153245{{ product?.data?.id }}</p>
                         <p class="product__status">В наличии</p>
@@ -61,8 +51,10 @@ watch(pending, () => {
                                 ><i class="product__add-button-icon icon_add_shopping_cart"></i>В корзине</template
                             >
                         </Button>
-                    </div>
+                    </template>
                 </div>
+            </div>
+            <template v-if="!pending">
                 <TabView id="product-description-tabview">
                     <TabPanel header="Описание">
                         <p class="product__description">{{ product?.data.description }}</p>
@@ -86,8 +78,8 @@ watch(pending, () => {
                         </table>
                     </TabPanel>
                 </TabView>
-            </div>
-        </template>
+            </template>
+        </div>
     </div>
 </template>
 
@@ -125,7 +117,6 @@ h1 {
 
 .product {
     margin: 0rem auto;
-    // margin-top: 3rem;
     max-width: 1200px;
 
     &__header {
@@ -170,7 +161,6 @@ h1 {
     }
 
     &__right-wrapper {
-        // width: 100%;
         margin: 0 1.5rem;
 
         @media (min-width: 630px) {
@@ -227,7 +217,6 @@ h1 {
 
 th,
 td {
-    // padding: 0.25rem 1.5rem;
     text-align: left;
 
     &:first-child {
