@@ -25,14 +25,3 @@ jobs:
                   key: ${{ secrets.VDS_KEY }}
                   source: ./.output
                   target: ${{ vars.LOCATION_FRONT_DEV }}
-            - name: restart nodejs process
-              uses: appleboy/ssh-action@v1.0.3
-              with:
-                  host: ${{ secrets.VDS_IP }}
-                  username: ${{ secrets.VDS_USER }}
-                  key: ${{ secrets.VDS_KEY }}
-                  script: |
-                      echo "Start"
-                      set -e
-                      sh ~/soundhead_dev_restart.sh
-                      echo "Finish"
