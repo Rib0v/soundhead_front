@@ -34,31 +34,40 @@ yarn dev
 
 ##### Различия в ОС
 
-Все команды написаны для `Linux` системы. В `Windows` и `Mac OS` необходимо заменить `docker compose` на `docker-compose`, а `sudo` писать не обязательно. В `Windows` все команды выполнять в среде `WSL`.
+Все команды написаны для `Linux` системы. В `Windows` и `Mac OS` необходимо заменить `docker compose` на `docker-compose`, а `sudo` писать не обязательно. В `Windows` все команды выполняются в среде `WSL`.
 
 ##### Установка
 
+Копируем файл конфига  и файл с переменными окружения:
+
 ```bash
-# Копируем файл конфига и файл с переменными окружения
-cp nuxt.config.ts.example nuxt.config.ts
-cp .env.example .env
+cp nuxt.config.ts.example nuxt.config.ts && cp .env.example .env
+```
 
-# Записываем id хоста в переменную, чтобы
-# не было проблем с правами доступа к файлам
+Записываем id хоста в переменную, чтобы не было проблем с правами доступа к файлам:
+
+```bash
 echo -e "\nDOCKER_USER=$(id -u):$(id -g)" >> .env
+```
 
-# Устанавливаем зависимости
+Устанавливаем зависимости:
+
+```bash
 sudo docker compose run --rm yarn
 ```
 
 ##### Запуск
 
-Сначала создаём общую сеть и запускаем frontend, после этого — [backend-часть](https://github.com/Rib0v/soundhead_back).
+Сначала нужно создать общую сеть и запустить frontend приложение, только после этого — [backend-часть](https://github.com/Rib0v/soundhead_back).
+
+Создаём общую сеть:
 
 ```bash
-# создаём общую сеть
 sudo docker network create soundhead
+```
 
-# Запускаем сервер
+Запускаем сервер, приложение будет доступно на 80 порту `http://localhost/`
+
+```bash
 sudo docker compose up nuxt
 ```
