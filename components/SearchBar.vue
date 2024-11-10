@@ -18,7 +18,6 @@ watch(query, () => {
 });
 
 async function search() {
-    console.log(query.value);
     try {
         const resp = await $fetch<{ data: Product[] }>(addApiBase(`products/search/${query.value}`), {
             query: { paginate: 5 },
