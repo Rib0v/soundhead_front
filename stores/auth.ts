@@ -24,11 +24,6 @@ export const useAuthStore = defineStore("auth", () => {
     }
 
     async function onResponseError({ request, response, options }: any) {
-        // console.log("Error Response:", response);
-        // console.log("Error status:", response.status);
-        // console.log("Er request:", request);
-        // console.log("Er options:", options);
-
         /**
          * 403 = access токен просрочен,
          * делаем запрос на обнавление
@@ -64,8 +59,10 @@ export const useAuthStore = defineStore("auth", () => {
         onResponseError,
     });
 
-    // Resp - дата в корне, вида resp.user_id
-    // Инфа об ошибках - error.response._data (с подчеркиванием)
+    /**
+     * Данные ответа в корне, вида resp.user_id
+     * Инфа об ошибках - error.response._data (с подчеркиванием)
+     */
     async function login(payload: LoginData) {
         loading.value = true;
         response.value.success = response.value.error = {};
@@ -176,8 +173,6 @@ export const useAuthStore = defineStore("auth", () => {
             // response.value.success = resp;
 
             if (resp.access) {
-                console.log("old token: ", authData.value.token);
-
                 authData.value = {
                     userId: resp.user_id,
                     token: resp.access,
@@ -185,8 +180,6 @@ export const useAuthStore = defineStore("auth", () => {
                 };
 
                 saveToLocalStorage("auth", authData.value);
-
-                console.log("new token: ", authData.value.token);
             }
         } catch (error: any) {
             // response.value.error = { ...error.response };
@@ -227,12 +220,10 @@ export const useAuthStore = defineStore("auth", () => {
         if (!authData.value.tokenExp) return true;
 
         if (Date.now() / 1000 > authData.value.tokenExp) {
-            console.log("Токен просрочен");
             return true;
         }
 
         const timeToExpired = Math.floor(authData.value.tokenExp - Date.now() / 1000);
-        console.log(`Токен истекает через ${timeToExpired} секунд`);
         return false;
     }
 
