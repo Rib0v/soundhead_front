@@ -20,7 +20,7 @@ case "$1" in
     fi
 
     docker compose run --rm yarn
-    docker compose up nuxt
+    docker compose up nuxt -d --remove-orphans
     
     echo "Initialization finished"
     echo -e "\e[32m\nFrontend is started. Now run backend.\e[0m"
